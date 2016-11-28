@@ -1,12 +1,16 @@
 <apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="GetRecordsWithJsController">
     <style type="text/css">
-        .parent {
+/*        .parent {
             width: 100%;
             height: 100%;
             position: absolute;
             top: 0;
             left: 0;
             overflow: auto;
+        }*/
+        #progressbar .ui-progressbar-value {
+            background-color: brown;
+
         }
     </style>
 
@@ -18,7 +22,8 @@
 
     <!-- hendelbar script tamplates -->
     <script id="tablesPickListTemplate" type="text/x-handlebars-template">
-        <select onchange="onTableChange(this)" id="tableSelect" >
+        <label for="tableSelect">Select a table</label>
+        <select onchange="onTableChange(this)" id="tableSelect" style="position: relative;" >
             {{#each table}} 
                 <option value="{{tableName}}" class="ui-widget">{{tableName}}</option>
             {{/each}} 
@@ -217,17 +222,23 @@
         }                
     </script>
 
-    <div class="parent">
+    <div class="parent" style="border: 4px double black;text-align:center; ">
+
+
 
         <div id="responseErrors" ></div>
 
         
-        <div id="tablesPickList" ></div>
-        <div id="fieldsPickList" style="display: none;" ></div>
-      
+        <div id="tablesPickList"  style="border: 4px double black;width: 80%;margin:0px auto;background-color: grey; " class="ui-widget"></div>
+        <div id="fieldsPickList" style="border: 4px double black;width: 80%;margin:0px auto;display: none;" ></div>
+        
+        <div id="spiner" style="border: 4px double black;width: 80%;margin:0px auto;display: none;" > 
+            <!-- <img src="/img/loading32.gif" />  -->
+            <div id="progressbar"></div>
+        </div>   
 
-        <div id="resultTable" style="display: none;" class="ui-widget" >
-            <table id="sortTable" border="1">
+        <div id="resultTable" style="border: 4px double black;width: 80%;margin:0px auto;overflow: scroll;display: none;" class="ui-widget" >
+            <table id="sortTable" border="1" style=" margin:auto;">
                 <thead id="tableHead"> 
                     
                 </thead>
@@ -236,13 +247,13 @@
                 </tbody>
             </table>
         </div>
-        <div id="buttonEditBlock" style="display: none;" >
+        <div id="buttonEditBlock" style="border: 4px double black;width: 80%;margin:0px auto;display: none;" >
                 <button onclick="editRows()" id="buttonEdit" class="ui-button ui-widget ui-corner-all" >Edit</button>
         </div>
         
-        <div id="spiner" style="display: none;" > 
-            <img src="/img/loading32.gif" /> 
-        </div>
+
+
+        <!-- <div id="progressbar" style="width: 80%;"></div> -->
 
     </div>
 
@@ -310,7 +321,7 @@
 
         $("#tableBody").on('click', 'td', function(cell){
             if ($(this).hasClass('false')) {
-                if ($(this).hasClass('REFERENCE') || $(this).hasClass('ID')) {
+                if (($(this).hasClass('REFERENCE') || $(this).hasClass('ID')) && $(this).text().length > 0) {
                     window.open('https://ap2.salesforce.com/' + $(this).text());
                 }
                 return;
@@ -372,7 +383,12 @@
 
     <!-- Initial script for tableList -->
     <script type="text/javascript">
-        // $( "#tableSelect" ).selectmenu();
+        $( "#tableSelect" ).selectmenu();
+
+        $( "#progressbar" ).progressbar({
+            value: false
+        });
+
 
         var tables = {
             table: []
