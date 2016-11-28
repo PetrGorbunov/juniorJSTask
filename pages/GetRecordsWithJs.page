@@ -1,0 +1,372 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="GetRecordsWithJsController">
+    <apex:includeScript value="{!$Resource.handlebars405}"/>
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" />
+
+    <!-- hendelbar script tamplates -->
+    <script id="tablesPickListTemplate" type="text/x-handlebars-template">
+        <select onchange="onTableChange(this)" id="tableSelect">
+            {{#each table}} 
+                <option value="{{tableName}}">{{tableName}}</option>
+            {{/each}} 
+        </select>             
+    </script>
+
+    <script id="fieldsPickListTemplate" type="text/x-handlebars-template">
+        <div>
+            <select multiple="multiple" id="fieldSelect" size="10">
+                {{#each field}} 
+                    <option value="{{fieldName}}">{{fieldName}}</option>
+                {{/each}} 
+            </select>
+        </div>
+        <div> 
+            <button onclick="runQuery()">Run query</button>
+        </div>
+    </script>
+
+    <script id="resultHead" type="text/x-handlebars-template">
+        <tr>
+            {{#headName}}
+                <td class="{{isEdit}}">{{head}}</td>
+            {{/headName}}
+        </tr>
+    </script>
+
+    <script id="resultBody" type="text/x-handlebars-template">        
+                        
+        {{#each records}}
+            <tr class="noEdited">
+                {{#each fieldsList}}
+                    <td class="{{fieldType}} {{isEdit}}">{{fieldValue}}</td>
+                {{/each}}
+            </tr>
+        {{/each}}
+        
+    </script>   
+
+    <!-- functions for @RemoteAction methods -->    
+    <script type="text/javascript">    
+        
+        //call @RemoteAction method "getAllFields()"
+        function onTableChange(tableName) {
+            $("#fieldsPickList").hide();
+            $("#resultTable").hide();
+            $("#buttonEditBlock").hide();
+            $("#spiner").show();
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GetRecordsWithJsController.getAllFields}',
+                tableName.value,
+                function(result, event) {
+                    if (event.status) {                       
+                        $("#spiner").hide();
+                        $("#fieldsPickList").show();
+
+                        var fields = {
+                            field: []
+                        };
+
+                        for (var i = 0; i < result.length; i++) {                            
+                            fields.field.push({
+                                "fieldName" : result[i]
+                            });
+                        }                        
+                       
+                        var source = $("#fieldsPickListTemplate").html(); 
+                        var template = Handlebars.compile(source); 
+                        $('#fieldsPickList').empty().append(template(fields));                        
+                    } 
+                    else if (event.type === 'exception') {
+                        document.getElementById("responseErrors").innerHTML =
+                            event.message + "<br/>\n<pre>" + event.where + "</pre>";
+                    } 
+                    else {
+                        document.getElementById("responseErrors").innerHTML = event.message;
+                    }
+                },
+                {escape: true}
+            );                        
+        }
+
+        //call @RemoteAction method "runQuery()"
+        function runQuery() {
+            $('#responseErrors').empty();
+            $("#resultTable").hide();
+            $("#buttonEditBlock").hide();
+            $("#spiner").show();
+
+            var tableName = $("#tableSelect").val();
+            fieldsName = $("#fieldSelect").val();            
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GetRecordsWithJsController.runQuery}',
+                tableName,
+                fieldsName,
+                function(result, event) {
+                    if (event.status) {                        
+                        if (result[0] == null) {
+                            $("#spiner").hide();
+                            alert("Teble \'" + tableName + "\' do not have a data!");
+                            $("#resultTable").hide();
+                            return;
+                        }
+
+                        $("#spiner").hide();
+                        $("#resultTable").show();
+                        var heads = {
+                            headName: []
+                        };
+
+                        for (var i = 0; i < result[0].fieldsList.length; i++) {
+                            heads.headName.push({
+                                "head" : result[0].fieldsList[i].fieldName,
+                                "isEdit" : result[0].fieldsList[i].isEdit
+                            });
+                        }
+
+                        var sourceHead = $("#resultHead").html(); 
+                        var templateHead = Handlebars.compile(sourceHead); 
+                        $('#tableHead').empty().append(templateHead(heads));
+                        
+                        for (var i = 0; i <= result.length - 1; i++) {
+                            for (var j = 0; j <= result[i].fieldsList.length - 1; j++) {                                
+                                if (result[i].fieldsList[j].fieldType == "DATE" && !!result[i].fieldsList[j].fieldValue ) {                                    
+                                    var myDate = new Date(result[i].fieldsList[j].fieldValue);
+                                    day = myDate.getDate();
+                                    day = (day < 10) ? "0" + day : day; 
+
+                                    month = myDate.getMonth() + 1;
+                                    month = (month < 10) ? "0" + month : month;
+                                    // if (month < 10) {
+                                    //     month = "0" + month;
+                                    // }
+                                    year = myDate.getFullYear();
+                                    dateStr = day + '/' + month + '/' + year;
+
+                                    result[i].fieldsList[j].fieldValue = dateStr;
+                                }
+                            }                           
+                        }
+
+                        var res = {
+                            records: result
+                        };
+
+                        var source = $("#resultBody").html(); 
+                        var template = Handlebars.compile(source); 
+                        $('#tableBody').empty().append(template(res)); 
+                    } else if (event.type === 'exception') {
+                        document.getElementById("responseErrors").innerHTML =
+                            event.message + "<br/>\n<pre>" + event.where + "</pre>";
+                    } else {
+                        document.getElementById("responseErrors").innerHTML = event.message;
+                    }
+                },
+                {escape: false}
+            );            
+        }
+
+        //call @RemoteAction method "saveListObjects()"        
+        function editRows() {            
+            $("#spiner").show();            
+            var tableForChange = [];            
+            $("#sortTable thead>tr,#sortTable tr.Edited").each(function() { 
+                var arrayCurrentRow = [];
+                var elementCurrentRow = $(this).find('td');
+                if (elementCurrentRow.length > 0) {
+                    elementCurrentRow.each(function() {
+                        if( $(this).hasClass("true") || $(this).index() == 0) {
+                            arrayCurrentRow.push($(this).text());
+                        }
+                    });
+                    tableForChange.push(arrayCurrentRow);
+                }
+            });            
+            var tableName = $("#tableSelect").val();            
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GetRecordsWithJsController.saveListObjects}',
+                tableForChange,
+                tableName,
+                function(result, event) {
+                    if (event.status) {
+                        $("#spiner").hide();       
+                    } else if (event.type === 'exception') {
+                        document.getElementById("responseErrors").innerHTML =
+                            event.message + "<br/>\n<pre>" + event.where + "</pre>";
+                    } else {
+                        document.getElementById("responseErrors").innerHTML = event.message;
+                    }
+                },
+                {escape: true}
+            );
+        }                
+    </script>
+
+    <div id="responseErrors"></div>
+
+    <div id="tablesPickList" ></div>
+    <div id="fieldsPickList" style="display: none;" ></div>
+
+    <div id="resultTable" style="display: none;" >
+        <table border="1" id="sortTable">
+            <thead id="tableHead"> 
+                
+            </thead>
+            <tbody id="tableBody">
+                
+            </tbody>
+        </table>
+    </div>
+    <div id="buttonEditBlock" style="display: none;" >
+            <button onclick="editRows()" id="buttonEdit" >Edit</button>
+    </div>
+    
+    <div id="spiner" style="display: none;" > 
+        <img src="/img/loading32.gif" /> 
+    </div>
+
+    <!-- scripts for actions -->
+    <script type="text/javascript">
+        var val;
+
+        $("#tableHead").click( function(currentRow) {
+            var fieldSort = currentRow.target.cellIndex;
+            var condition;
+            if( $('#tableHead td:eq(' + fieldSort + ') img').is('#asc') ) {
+                condition = -1;
+                $( "#desc,#asc" ).remove();
+            }
+            else {
+                condition = 1;
+                $( "#desc,#asc" ).remove();
+                console.log("condition = 1");
+            };
+
+            var desc = '<img id="desc" src="/img/sort_desc_arrow.gif" />';
+            var asc = '<img id="asc" src="/img/sort_asc_arrow.gif" />';
+
+            if(condition == 1) {
+                $("#tableHead td:eq(" + fieldSort + ")").append(asc);
+            }
+            else {
+                $("#tableHead td:eq(" + fieldSort + ")").append(desc);   
+            }
+           
+            var tbody = $("#tableBody")[0];
+            var type = $("#tableBody tr td").eq(fieldSort).attr('class');
+            type = type.split(' ');
+
+            var rowsArray = [].slice.call(tbody.rows);
+            var compare;
+
+            switch (type[0]) {
+                case 'DOUBLE':
+                    compare = function(rowA, rowB) {
+                        return (rowA.cells[fieldSort].innerHTML - rowB.cells[fieldSort].innerHTML) * condition;
+                    };
+                    break;
+                case 'DATE':
+                    compare = function(rowA, rowB) {
+                        var dateA = rowA.cells[fieldSort].innerHTML.split('/');
+                        var dateB = rowB.cells[fieldSort].innerHTML.split('/');
+                        var result = new Date(dateA[2], dateA[1]-1, dateA[0]) > new Date(dateB[2], dateB[1]-1, dateB[0]) ? 1 : -1; 
+                        return result * condition;
+                    };
+                    break;
+                default:
+                    compare = function(rowA, rowB) {                
+                        return (rowA.cells[fieldSort].innerHTML > rowB.cells[fieldSort].innerHTML ? 1 : -1) * condition;
+                    };
+                    break;
+            }
+            rowsArray.sort(compare);
+            $("#tableBody").children('tr').remove();
+
+            for (var i = 0; i < rowsArray.length; i++) {
+                tbody.append(rowsArray[i]);
+            }
+        });
+
+        $("#tableBody").on('click', 'td', function(cell){
+            if ($(this).hasClass('false')) {
+                if ($(this).hasClass('REFERENCE') || $(this).hasClass('ID')) {
+                    window.open('https://ap2.salesforce.com/' + $(this).text());
+                }
+                return;
+            }
+
+            var t = cell.target || cell.srcElement;
+            var oldVal = t.innerHTML;
+            var tagName = t.tagName.toLowerCase();
+
+            if(tagName == 'input') {
+                return false;
+            }
+
+            val = t.innerHTML;
+            var code = '<input class="'+ $(this).attr('class') +'" type="text" id="edit" value="'+val+'" />';
+            $(this).empty();
+            $(this).append(code);
+
+            //show datePicker
+            if ($(this).hasClass('DATE')) { 
+                $("#edit").datepicker({
+                    onSelect: function(dateText, inst) {
+                        $("#buttonEditBlock").show();
+                        var val = $(this).val();
+                        $(this).parents("tr").attr("class", "Edited");
+                        $(this).parent().empty().html(val);
+                    },
+                    onClose: function(selectedDate) {
+                        $(this).parent().empty().html(oldVal);                        
+                    }
+                }).focus();
+            }
+            else {
+                $("#edit").focus();
+                $("#edit").blur(function() {                
+                    var val = $(this).val();
+                    $(this).parents("tr").attr("class", "Edited");
+                    $(this).parent().empty().html(val);
+                    $("#buttonEditBlock").show();
+                });        
+            }
+        });
+
+        $(window).keydown(function(event) {      
+            //pressed enter      
+            if(event.keyCode == 13) {   
+                $("#edit").blur();
+                $("#buttonEditBlock").show();
+                $("#edit").parent("tr").attr("class", "Edited");
+            }
+
+            //pressed Esc
+            if(event.keyCode == 27) {   
+                $('#edit').parent().empty().html(val);
+                $('#edit').blur();
+            }
+        });
+    </script>
+
+    <!-- Initial script for tableList -->
+    <script type="text/javascript">
+        var tables = {
+            table: []
+        };
+
+        //get all tables names
+        <apex:repeat value="{!tableList}" var="table">
+            tables.table.push({
+                "tableName" : '{!table}'
+            });
+        </apex:repeat>
+
+        //initial handlebars tamplate
+        var source = $("#tablesPickListTemplate").html(); 
+        var template = Handlebars.compile(source); 
+        $('#tablesPickList').append(template(tables));
+    </script>
+</apex:page>
