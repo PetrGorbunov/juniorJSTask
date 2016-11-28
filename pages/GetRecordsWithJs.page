@@ -1,32 +1,45 @@
 <apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="GetRecordsWithJsController">
+    <style type="text/css">
+        .parent {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: auto;
+        }
+    </style>
+
     <apex:includeScript value="{!$Resource.handlebars405}"/>
-    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
-    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" />
+
+    <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/external/jquery/jquery.js')}"/>
+    <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.css')}"/>
 
     <!-- hendelbar script tamplates -->
     <script id="tablesPickListTemplate" type="text/x-handlebars-template">
-        <select onchange="onTableChange(this)" id="tableSelect">
+        <select onchange="onTableChange(this)" id="tableSelect" >
             {{#each table}} 
-                <option value="{{tableName}}">{{tableName}}</option>
+                <option value="{{tableName}}" class="ui-widget">{{tableName}}</option>
             {{/each}} 
         </select>             
     </script>
 
     <script id="fieldsPickListTemplate" type="text/x-handlebars-template">
         <div>
-            <select multiple="multiple" id="fieldSelect" size="10">
+            <select multiple="multiple" id="fieldSelect" size="10" class="ui-widget" >
                 {{#each field}} 
                     <option value="{{fieldName}}">{{fieldName}}</option>
                 {{/each}} 
             </select>
         </div>
         <div> 
-            <button onclick="runQuery()">Run query</button>
+            <button onclick="runQuery()" class="ui-button ui-widget ui-corner-all">Run query</button>
         </div>
     </script>
 
     <script id="resultHead" type="text/x-handlebars-template">
-        <tr>
+        <tr class="ui-widget-header">
             {{#headName}}
                 <td class="{{isEdit}}">{{head}}</td>
             {{/headName}}
@@ -36,7 +49,7 @@
     <script id="resultBody" type="text/x-handlebars-template">        
                         
         {{#each records}}
-            <tr class="noEdited">
+            <tr class="noEdited ui-widget">
                 {{#each fieldsList}}
                     <td class="{{fieldType}} {{isEdit}}">{{fieldValue}}</td>
                 {{/each}}
@@ -204,27 +217,33 @@
         }                
     </script>
 
-    <div id="responseErrors"></div>
+    <div class="parent">
 
-    <div id="tablesPickList" ></div>
-    <div id="fieldsPickList" style="display: none;" ></div>
+        <div id="responseErrors" ></div>
 
-    <div id="resultTable" style="display: none;" >
-        <table border="1" id="sortTable">
-            <thead id="tableHead"> 
-                
-            </thead>
-            <tbody id="tableBody">
-                
-            </tbody>
-        </table>
-    </div>
-    <div id="buttonEditBlock" style="display: none;" >
-            <button onclick="editRows()" id="buttonEdit" >Edit</button>
-    </div>
-    
-    <div id="spiner" style="display: none;" > 
-        <img src="/img/loading32.gif" /> 
+        
+        <div id="tablesPickList" ></div>
+        <div id="fieldsPickList" style="display: none;" ></div>
+      
+
+        <div id="resultTable" style="display: none;" class="ui-widget" >
+            <table id="sortTable" border="1">
+                <thead id="tableHead"> 
+                    
+                </thead>
+                <tbody id="tableBody">
+                    
+                </tbody>
+            </table>
+        </div>
+        <div id="buttonEditBlock" style="display: none;" >
+                <button onclick="editRows()" id="buttonEdit" class="ui-button ui-widget ui-corner-all" >Edit</button>
+        </div>
+        
+        <div id="spiner" style="display: none;" > 
+            <img src="/img/loading32.gif" /> 
+        </div>
+
     </div>
 
     <!-- scripts for actions -->
@@ -353,6 +372,8 @@
 
     <!-- Initial script for tableList -->
     <script type="text/javascript">
+        // $( "#tableSelect" ).selectmenu();
+
         var tables = {
             table: []
         };
