@@ -54,16 +54,16 @@ public with sharing class GetRecordsWithJsUCController {
     }
 
     @RemoteAction
-    public static List<Object> runQuery(String tableName, List<String> tableFields) {
+    public static List<Object> runQuery(String tableName, List<String> fields) {
         //include field 'ID' for any query
-        List<String> fields = new List<String>();
-        if (tableFields[0] != 'Id') {
-            fields.add('Id');
-            fields.addAll(tableFields);
-        } 
-        else {
-            fields.addAll(tableFields);    
-        }
+        //List<String> fields = new List<String>();
+        //if (tableFields[0] != 'Id') {
+        //    fields.add('Id');
+        //    fields.addAll(tableFields);
+        //} 
+        //else {
+        //    fields.addAll(tableFields);    
+        //}
 
         //create query
         String query = 'SELECT ';

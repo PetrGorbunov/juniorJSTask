@@ -3,17 +3,26 @@
     <!-- <script type="text/javascript" src="http://documentcloud.github.com/underscore/underscore-min.js"></script> -->
     <apex:includeScript value="{!$Resource.undercore}"/>
 
-    <div id="Errors"></div>
-    <div id="hello">Hello undercore</div>
+
+    <div id="Errors" ></div>
+    <div id="hello">Hello undercore &#9650; &#9660; &#8592; &larr;</div>
+    
     <div id="divTableNames"></div>
     <div id="divTableFields"></div>
+    
     <div id="spiner" > 
         <img src="/img/loading32.gif" /> 
     </div>
 
+    <div id="divResultTable">
+        <table id="resultTableTag" border="1">
+            
+        </table>
+    </div>
+
 
     <script type="text/javascript">
-        $('#hello').text('NEW TEXT');
+        // $('#hello').text('NEW TEXT  &#9650; &#9660; &#8592; &larr; ');
 
         console.log('UNDERSCORE_IS_WORKING=' + _.isEmpty({}));
 
@@ -75,9 +84,18 @@
 
         function runQuery() {
             $('#spiner').show();
+            $('#resultTableTag').empty();
 
             tableName = $("#selectTableNames").val();
             fieldsName = $("#selectFieldNames").val(); 
+            if (_.indexOf(fieldsName, 'Id') == -1) {
+                console.log('no Id');
+                fieldsName.unshift('Id');
+            }
+
+            console.log('fieldsName[0]=' + fieldsName[0]);
+            console.log('selectTableNames=' + tableName);
+            console.log('fieldsName=' + fieldsName);
 
             Visualforce.remoting.Manager.invokeAction(
                 '{!$RemoteAction.GetRecordsWithJsUCController.runQuery}',
@@ -87,6 +105,43 @@
                     if (event.status) {   
                         $('#spiner').hide();  
                         console.log('FROM runQuery()');
+                        console.log('result=' + result);
+                        //for head
+                        heads = [];
+                        for (var iter = 0; iter < fieldsName.length; iter++) {
+                            heads.push({
+                                "name" : fieldsName[iter]
+                            });
+                        }
+
+                        console.log('heads.length=' + heads.length);
+                        resultTableHeadView = $("#tmpResultTableHead").html();
+                        $('#resultTableTag').append(_.template(resultTableHeadView, {heads: heads}));
+
+                        // for body
+
+                        var isR = "" 
+                        if ( !result[0].fieldsList[0].isEdit ) {
+                            isR = "disabled";
+                        }
+                        console.log('field.isEdit=' + result[0].fieldsList[0].isEdit + ';isR=' + isR);
+
+                        console.log('result[0].fieldsList[0].fieldName=' + result[0].fieldsList[0].fieldValue);
+                        console.log('result[0].fieldsList[0].isEdit=' + result[0].fieldsList[0].isEdit);
+
+                        records = [];
+
+                        for (var iter = 0; iter < result.length; iter++) {
+                            records.push({
+                                object: result[iter]
+                            });
+                        }
+
+                        resultTableBodyView = $("#tmpResultTableBody").html();
+                        $('#resultTableTag').append(_.template(resultTableBodyView, {records: records}));
+
+
+
                     }
                     else if (event.type === 'exception') {
                         $("#Errors").text(event.message + ". Look:" + event.where);
@@ -98,6 +153,12 @@
                 {escape: false}
             );
         }
+    </script>
+    <!-- ACTION FUNCTION -->   
+    <script type="text/javascript"> 
+        $("#tableHead").click( function(currentRow) {
+            console.log('head clicked');
+        });   
     </script>
 
     <!-- UNDERCORE TEMPLATES -->
@@ -120,6 +181,33 @@
         <div>
             <button onclick="runQuery()" >Run query</button>
         </div>
+    </script>
+
+    <script type="text/tmplate" id="tmpResultTableHead">
+            <thead id="tableHead">
+                <tr>
+                    <% _.each(heads, function(head, key, list) { %>
+                        <th><%= head.name + '&#9650;' %></th>
+                    <% }); %>
+                </tr>
+            </thead>     
+    </script>
+
+    <script type="text/tmplate" id="tmpResultTableBody">
+            <tbody>
+                <% _.each(records, function(record, key, list) { %>
+                    <tr> 
+                        <% _.each(record.object.fieldsList, function(field, key, list) { %>
+                            <%  isDisabled = "";  %>
+                            <%  if (!field.isEdit) { isDisabled = "disabled" } %>  
+                            <td> 
+                                <input  <%= isDisabled %> type="text" value="<%= field.fieldValue %>" /> 
+                            </td> 
+                        <% }); %>
+                        <!-- <td><%= record.object.fieldsList[0].fieldValue %></td>                     -->
+                    </tr>
+                <% }); %>
+            </tbody>     
     </script>
 
 
