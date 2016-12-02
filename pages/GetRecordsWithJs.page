@@ -15,6 +15,9 @@
     </style>
 
     <apex:includeScript value="{!$Resource.handlebars405}"/>
+    <apex:includeScript value="{!$Resource.underscore}"/>
+    
+    
 
     <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/external/jquery/jquery.js')}"/>
     <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.min.js')}"/>
@@ -103,7 +106,7 @@
                         document.getElementById("responseErrors").innerHTML = event.message;
                     }
                 },
-                {escape: true}
+                    
             );                        
         }
 

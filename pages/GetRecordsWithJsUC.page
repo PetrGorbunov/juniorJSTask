@@ -1,0 +1,126 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="GetRecordsWithJsUCController">
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
+    <!-- <script type="text/javascript" src="http://documentcloud.github.com/underscore/underscore-min.js"></script> -->
+    <apex:includeScript value="{!$Resource.undercore}"/>
+
+    <div id="Errors"></div>
+    <div id="hello">Hello undercore</div>
+    <div id="divTableNames"></div>
+    <div id="divTableFields"></div>
+    <div id="spiner" > 
+        <img src="/img/loading32.gif" /> 
+    </div>
+
+
+    <script type="text/javascript">
+        $('#hello').text('NEW TEXT');
+
+        console.log('UNDERSCORE_IS_WORKING=' + _.isEmpty({}));
+
+        $('#spiner').show();
+
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.GetRecordsWithJsUCController.getTableNames}',            
+            function(result, event) {
+                $('#spiner').hide();
+
+                if (event.status) {
+                    tables = [];
+                    for (var iter = 0; iter < result.length; iter++) {  
+                        tables.push({name: result[iter]}); 
+                    }     
+                    tableNamesView = $("#tmpTableNames").html();
+                    $('#divTableNames').append(_.template(tableNamesView, {tables: tables}));               
+                } 
+                else if (event.type === 'exception') {
+                    $("#Errors").text(event.message + ". Look:" + event.where);
+                } 
+                else {
+                    $("#Errors").text(event.message);
+                }
+            },
+            {escape: false}
+        );
+
+        function getFields(tableName) { 
+            $("#divTableFields").empty();    
+            $('#spiner').show();
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GetRecordsWithJsUCController.getFields}',
+                tableName.value,
+                function(result, event) {
+                    if (event.status) {      
+                        $('#spiner').hide();            
+                       
+                        fields = [];
+                        for (var iter = 0; iter < result.length; iter++) {  
+                            fields.push({name: result[iter]}); 
+                        }
+                        if (fields.length > 0) {                        
+                            tableFieldsView = $("#tmpFieldNames").html();
+                            $('#divTableFields').append(_.template(tableFieldsView, {fields: fields}));
+                        }
+                    } 
+                    else if (event.type === 'exception') {
+                        $("#Errors").text(event.message + ". Look:" + event.where);
+                    } 
+                    else {
+                        $("#Errors").text(event.message);
+                    }
+                },
+                {escape: false}
+            );                        
+        }
+
+        function runQuery() {
+            $('#spiner').show();
+
+            tableName = $("#selectTableNames").val();
+            fieldsName = $("#selectFieldNames").val(); 
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GetRecordsWithJsUCController.runQuery}',
+                tableName,
+                fieldsName,
+                function(result, event) {
+                    if (event.status) {   
+                        $('#spiner').hide();  
+                        console.log('FROM runQuery()');
+                    }
+                    else if (event.type === 'exception') {
+                        $("#Errors").text(event.message + ". Look:" + event.where);
+                    } 
+                    else {
+                        $("#Errors").text(event.message);
+                    }
+                },
+                {escape: false}
+            );
+        }
+    </script>
+
+    <!-- UNDERCORE TEMPLATES -->
+    <script type='text/template' id="tmpTableNames">
+        <select id="selectTableNames" onchange="getFields(this)">   
+            <% _.each(tables, function(table, key, list) { %>
+                <option value="<%= table.name %>"><%= table.name %></option>
+            <% }); %>
+        </select>
+    </script>
+
+    <script type='text/template' id="tmpFieldNames">
+        <div>
+            <select id="selectFieldNames" multiple="multiple" size="10" >   
+                <% _.each(fields, function(field, key, list) { %>
+                    <option value="<%= field.name %>"><%= field.name %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div>
+            <button onclick="runQuery()" >Run query</button>
+        </div>
+    </script>
+
+
+</apex:page>
