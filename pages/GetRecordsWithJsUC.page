@@ -3,6 +3,9 @@
     <!-- <script type="text/javascript" src="http://documentcloud.github.com/underscore/underscore-min.js"></script> -->
     <apex:includeScript value="{!$Resource.undercore}"/>
 
+    <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.css')}"/>
+
 
     <div id="Errors" ></div>
     <div id="hello">Hello undercore &#9650; &#9660; &#8592; &larr;</div>
@@ -16,8 +19,31 @@
 
     <div id="divResultTable">
         <table id="resultTableTag" border="1">
-            
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>            
         </table>
+    </div>
+
+    <div id="pagination">
+        <select id="rowsOnPage">
+            <option value="5" >5</option>
+            <option value="10" >10</option>
+            <option value="18" >18</option>
+
+            <option value="25" >25</option>
+            <option value="50" >50</option>
+        </select>
+
+        <button id="firstPage">&lt;&lt;</button>
+        <button id="prevPage">&lt;</button>
+        <input id="currentPage" type="text" value="1" />
+        <span id="pagesCount"></span>
+        <button id="nextPage">&gt;</button>
+        <button id="lastPage">&gt;&gt;</button>
+    </div>
+
+    <div id="buttonEditBlock" >
+        <button onclick="editRows()" id="buttonEdit" >Change</button>
     </div>
 
 
@@ -82,9 +108,13 @@
             );                        
         }
 
-        function runQuery() {
+        function runQuery(field, direction) {
             $('#spiner').show();
-            $('#resultTableTag').empty();
+            $('#tableHead').empty();
+            $('#tableBody').empty();
+
+            console.log('field=' + field);
+            console.log('direction=' + direction);
 
             tableName = $("#selectTableNames").val();
             fieldsName = $("#selectFieldNames").val(); 
@@ -101,6 +131,8 @@
                 '{!$RemoteAction.GetRecordsWithJsUCController.runQuery}',
                 tableName,
                 fieldsName,
+                field,
+                direction,
                 function(result, event) {
                     if (event.status) {   
                         $('#spiner').hide();  
@@ -109,16 +141,32 @@
                         //for head
                         heads = [];
                         for (var iter = 0; iter < fieldsName.length; iter++) {
-                            heads.push({
-                                "name" : fieldsName[iter]
-                            });
+                            if (fieldsName[iter] == field) {
+                                heads.push({
+                                    "name" : fieldsName[iter],
+                                    "isSort" : true,
+                                    "direction" : direction,
+                                    "isEdit" : result[0].fieldsList[iter].isEdit
+                                });  
+                                console.log('SPARTA:TRUE:direction=' + direction + ';name=' + fieldsName[iter] + ';field=' + field);  
+                            }
+                            else {
+                                heads.push({
+                                    "name" : fieldsName[iter],
+                                    "isSort" : false,
+                                    "direction" : direction,
+                                    "isEdit" : result[0].fieldsList[iter].isEdit
+                                });
+                            }
                         }
 
                         console.log('heads.length=' + heads.length);
                         resultTableHeadView = $("#tmpResultTableHead").html();
-                        $('#resultTableTag').append(_.template(resultTableHeadView, {heads: heads}));
+                        $('#tableHead').append(_.template(resultTableHeadView, {heads: heads}));
+
 
                         // for body
+
 
                         var isR = "" 
                         if ( !result[0].fieldsList[0].isEdit ) {
@@ -137,8 +185,10 @@
                             });
                         }
 
-                        resultTableBodyView = $("#tmpResultTableBody").html();
-                        $('#resultTableTag').append(_.template(resultTableBodyView, {records: records}));
+                        paginationControl(records);
+
+                        // resultTableBodyView = $("#tmpResultTableBody").html();
+                        // $('#tableBody').append(_.template(resultTableBodyView, {records: records}));
 
 
 
@@ -153,15 +203,212 @@
                 {escape: false}
             );
         }
-    </script>
-    <!-- ACTION FUNCTION -->   
-    <script type="text/javascript"> 
+
+        function editRows() {
+            console.log('from edit rows');
+            var tableForChange = [];            
+            $("#resultTableTag thead>tr,#resultTableTag tr[type='Edited']").each(function() { 
+                var arrayCurrentRow = [];
+                var elementCurrentRow = $(this).find('td');
+                if (elementCurrentRow.length > 0) {
+                    elementCurrentRow.each(function() {
+                        if( $(this).attr('edit') == 'true' || $(this).index() == 0) {
+                            cellValue = $(this).clone().children().remove().end().text().replace(/\r|\n/g, '').trim(); 
+                            arrayCurrentRow.push(cellValue);
+                        }
+                    });
+                    tableForChange.push(arrayCurrentRow);
+                }
+            });
+
+            var myJsonString = JSON.stringify(tableForChange);
+            console.log('myJsonString=' + myJsonString);
+            console.log('tableForChange.length=' + tableForChange.length);
+            console.log('tableForChange[0].length=' + tableForChange[0].length);
+            console.log('tableForChange[1].length=' + tableForChange[1].length);
+
+
+            var tableName = $("#selectTableNames").val();
+            console.log('tableName=' + tableName);
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.GetRecordsWithJsUCController.saveListObjects}',
+                myJsonString,
+                tableName,
+                function(result, event) {
+                    if (event.status) {
+                        console.log('from  GetRecordsWithJsUCController.saveListObjects()');
+                        // $("#spiner").hide();
+                    }       
+                    else if (event.type === 'exception') {
+                        $("#Errors").text(event.message + ". Look:" + event.where);
+                    } 
+                    else {
+                        $("#Errors").text(event.message);
+                    }
+                },
+                {escape: false}
+            );
+
+
+        }
+
+        //SUPPORT FUNCTION
+        function openDatepicker(action, id) {
+            console.log('from openDatepicker()');
+            console.log('action=' + action.tagName);
+            // $(action).find('input')
+            $('#' + id).datepicker({
+                onSelect: function(dateText, inst) {
+                    // $("#buttonEditBlock").show();
+                    var val = $(this).val();
+                    console.log('onSelect val=' + val);
+
+                    // $(this).parents("tr").attr("class", "Edited");
+                    $(this).parent().empty().html(val);
+                },
+                onClose: function(selectedDate) {
+                    $(this).parent().empty().html(911);                        
+                }
+            }).focus();
+        }
+
+        function paginationControl(records) {
+            $('#tableBody').empty();
+
+            rowsPageCount = $("#rowsOnPage").val();
+            console.log('from pagination');
+            console.log('rowsPageCount=' + rowsPageCount);
+            console.log('records.length=' + records.length);
+            recordsCount = records.length;
+            pagesCount = Math.ceil(records.length/rowsPageCount);
+            $('#pagesCount').empty().text(pagesCount);
+            console.log('pagesCount=' + pagesCount);
+
+            currentPage = $("#currentPage").val();
+            console.log('currentPage=' + currentPage);
+
+            startRecord = (currentPage - 1) * rowsPageCount;
+            finishRecord = currentPage * rowsPageCount - 1;
+            if (finishRecord >= recordsCount) {
+                finishRecord = recordsCount - 1;
+            }
+            console.log(startRecord + ' FROM ' + finishRecord);
+
+            recordsView = [];
+            for (var i = startRecord; i <= finishRecord; i++) {
+                recordsView.push(records[i]);
+            }
+            console.log('recordsView=' + recordsView);
+
+            resultTableBodyView = $("#tmpResultTableBody").html();
+            $('#tableBody').append(_.template(resultTableBodyView, {recordsView: recordsView}));
+
+            if (currentPage == 1) { 
+                $('#firstPage').attr('disabled',true);
+                $('#prevPage').attr('disabled',true);                
+                $('#nextPage').removeAttr('disabled');
+                $('#lastPage').removeAttr('disabled');
+            }
+            else if (currentPage == pagesCount) {
+                $('#firstPage').removeAttr('disabled');
+                $('#prevPage').removeAttr('disabled');              
+                $('#nextPage').attr('disabled',true);  
+                $('#lastPage').attr('disabled',true);  
+            }
+            else {
+                $('#firstPage').removeAttr('disabled');
+                $('#prevPage').removeAttr('disabled');              
+                $('#nextPage').removeAttr('disabled'); 
+                $('#lastPage').removeAttr('disabled');                 
+            }       
+        }
+
+        // <!-- ACTION FUNCTION -->
+        $('#nextPage').click( function(action) {
+            console.log('from nexrPage()');
+            var currentPage =  parseInt($("#currentPage").val());
+            $("#currentPage").val(currentPage + 1);
+            paginationControl(records);
+
+        });
+
+        // var direction;
         $("#tableHead").click( function(currentRow) {
-            console.log('head clicked');
-        });   
+            activeField = currentRow.target || currentRow.srcElement;
+            if (activeField.tagName != 'TH') {
+                return;
+                // activeField = activeField.
+            }                    
+
+            if ($(activeField).attr('direction') == 'asc') {
+                direction = false;
+            } 
+            else {
+                direction = true;
+            }
+
+            $(activeField).find( "span").remove();
+            runQuery(activeField.textContent.trim(), direction);
+        });
+
+        $("#tableBody").click( function(action) {
+            console.log('from tableBody click');
+            currentCell = action.target || action.srcElement;
+            console.log('currentCell=' + currentCell.textContent.replace(/\r|\n/g, '').trim());
+
+            if(currentCell.tagName == 'INPUT') {
+                return;
+            }
+
+            // oldValue = currentCell.textContent;
+            oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim();
+
+            console.log('oldValue=' + oldValue); 
+            console.log('edit=' + $(currentCell).attr('edit'));
+
+            $(currentCell).empty();
+            object = {
+                value: oldValue,
+                dataType: $(currentCell).attr('type'),
+                edit: $(currentCell).attr('edit')
+
+            };           
+            console.log('object.oldValue=' + object); 
+
+            inputView = $("#tmpInput").html();
+            $(currentCell).append(_.template(inputView, {object: object}));
+
+            $(currentCell).find('input').focus();
+            if ($(currentCell).attr('type') == 'DATE') {
+                openDatepicker(currentCell, 'edit');
+            }
+
+            $(currentCell).find('input').blur(function() {                
+                var val = $(this).val();
+                $(this).parents("tr").attr("type", "Edited");
+                $(this).parent().empty().html(val);
+                // $("#buttonEditBlock").show();
+            }); 
+
+        });
     </script>
 
-    <!-- UNDERCORE TEMPLATES -->
+
+
+
+    <!-- UNDERSCORE TEMPLATES -->
+    <script type="text/template" id="tmpInput">
+        <%  disabled = "disabled"; %>
+        <%  if (object.edit == 'true') { disabled = '' } %>        
+        <input id="edit" type="text" value="<%= object.value %>" <%= disabled %> />
+        <!-- <% 
+        if (object.dataType == 'DATE') {
+            openDatepicker(this, 'edit');
+        }
+        %> -->
+    </script>
+
     <script type='text/template' id="tmpTableNames">
         <select id="selectTableNames" onchange="getFields(this)">   
             <% _.each(tables, function(table, key, list) { %>
@@ -179,36 +426,52 @@
             </select>
         </div>
         <div>
-            <button onclick="runQuery()" >Run query</button>
+            <button onclick="runQuery('Id', true);" >Run query</button>
         </div>
     </script>
 
     <script type="text/tmplate" id="tmpResultTableHead">
-            <thead id="tableHead">
+            <!-- <thead id="tableHead"> -->
                 <tr>
                     <% _.each(heads, function(head, key, list) { %>
-                        <th><%= head.name + '&#9650;' %></th>
+                        <%  sortClass = ""; direction = ''  %>
+                        <%  if (head.isSort) { if(head.direction) { direction = '&#9650;'; sortClass = "asc";  } else {direction = '&#9660;';sortClass = "desc";} } %>
+                        <td edit="<%= head.isEdit %>" direction="<%= sortClass  %>"><%= head.name %><span><%= direction %></span> </td>
+                        <!-- <th><%= head.name + '&#9650;' %></th> -->
                     <% }); %>
                 </tr>
-            </thead>     
+         <!--    </thead>    -->  
     </script>
 
     <script type="text/tmplate" id="tmpResultTableBody">
-            <tbody>
-                <% _.each(records, function(record, key, list) { %>
+            <!-- <tbody> -->
+                <% _.each(recordsView, function(record, key, list) { %>
                     <tr> 
                         <% _.each(record.object.fieldsList, function(field, key, list) { %>
-                            <%  isDisabled = "";  %>
-                            <%  if (!field.isEdit) { isDisabled = "disabled" } %>  
-                            <td> 
-                                <input  <%= isDisabled %> type="text" value="<%= field.fieldValue %>" /> 
+                            <!-- <%  isDisabled = "";  %> -->
+                            <!-- <%  if (!field.isEdit) { isDisabled = "disabled" } %>   -->
+                            <td type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
+                                <!-- <input  <%= isDisabled %> type="text" value="<%= field.fieldValue %>" />  -->
+                                <%= field.fieldValue %>
+                                
                             </td> 
                         <% }); %>
                         <!-- <td><%= record.object.fieldsList[0].fieldValue %></td>                     -->
                     </tr>
                 <% }); %>
-            </tbody>     
+            <!-- </tbody>      -->
     </script>
 
+
+
+
+       
+    <script type="text/javascript"> 
+        
+
+        $("#hello").click( function() {
+            console.log('hello clicked');
+        });   
+    </script>
 
 </apex:page>

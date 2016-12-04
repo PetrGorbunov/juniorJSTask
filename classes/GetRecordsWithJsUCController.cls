@@ -22,7 +22,7 @@ public with sharing class GetRecordsWithJsUCController {
         List<String> tableNames = new List<String>();
         tableNames.add(TABLE_NAME_NONE);
         for (Schema.SObjectType objectType : Schema.getGlobalDescribe().values()) {
-            tableNames.add(String.valueOf(objectType).toUpperCase());
+            tableNames.add(String.valueOf(objectType));
         }
         tableNames.sort();
 
@@ -54,7 +54,7 @@ public with sharing class GetRecordsWithJsUCController {
     }
 
     @RemoteAction
-    public static List<Object> runQuery(String tableName, List<String> fields) {
+    public static List<Object> runQuery(String tableName, List<String> fields, String sortField, Boolean isASC) {
         //include field 'ID' for any query
         //List<String> fields = new List<String>();
         //if (tableFields[0] != 'Id') {
@@ -66,11 +66,13 @@ public with sharing class GetRecordsWithJsUCController {
         //}
 
         //create query
+        String direction = (isASC) ? 'ASC' : 'DESC';
+
         String query = 'SELECT ';
         for (String field : fields) {
             query += field + ',';
         }
-        query = query.substringBeforeLast(',') + ' FROM ' + tableName;
+        query = query.substringBeforeLast(',') + ' FROM ' + tableName + ' ORDER BY ' + sortField + ' ' + direction;
 
         //get all records
         List<SObject> records = new List<SObject>();
@@ -123,6 +125,7 @@ public with sharing class GetRecordsWithJsUCController {
         String fieldName { get; set; }
         Object fieldValue { get; set; }
         String fieldType { get; set; }
+
         Boolean isEdit { get; set; }
 
         StructureData(String fieldName, Object fieldValue, String fieldType, Boolean isEdit) {
@@ -132,5 +135,103 @@ public with sharing class GetRecordsWithJsUCController {
             this.isEdit = isEdit;
         }           
     }
+
+    static Object getAdduceValue(String fieldType, String value) {
+        Object resultValue = value;
+        if (resultValue != null) {
+            try {
+                if (fieldType == 'DOUBLE') {
+                    resultValue = Double.valueOf(value);
+                }
+                else if (fieldType == 'DATE') {
+                    //List<String> dateList = fieldNames[fieldNumber].trim().split('/');
+                    //String currentDate = dateList[2] + '-' + dateList[1] + '-' + dateList[0];
+                    //fieldValue = Date.valueOf(currentDate);
+                }
+                else if (fieldType == 'INTEGER') {
+                    resultValue = Integer.valueOf(value);
+                }
+                else if (fieldType == 'BOOLEAN') {
+                    resultValue = Boolean.valueOf(value);
+                }
+            }
+            catch(Exception e) {
+                resultValue = null;
+            }
+        }
+        return resultValue;
+    }
+
+    @RemoteAction
+    public static void saveListObjects(String rec, String tableName) {
+        //created header list
+        System.debug('rec=' + rec);
+        List<List<String>> recordsList = (List<List<String>>)System.JSON.deserialize(rec, List<List<String>>.class);
+        System.debug('recordsList=' + recordsList);
+        
+        Map<String,Schema.SObjectField> fieldMap = Schema.getGlobalDescribe().get(tableName).getDescribe().fields.getMap();
+        Map<String,Schema.DisplayType> headerMap = new Map<String,Schema.DisplayType>(); 
+        for (String header : recordsList[0]) {
+            Schema.SObjectField field = fieldMap.get(header.trim());
+            Schema.DisplayType fldType = field.getDescribe().getType();
+            headerMap.put(header.trim(), fldType);
+        }
+
+        System.debug('headerMap=' + headerMap);
+
+        List<sObject> sObjects = new List<sObject>();
+        for (Integer rowNumber = 1; rowNumber < recordsList.size(); rowNumber++) {
+            System.debug('recordsList[x]=' + recordsList[rowNumber]);
+            sObject sObj = Schema.getGlobalDescribe().get(tableName).newSObject();
+            for (Integer fieldNumber = 0; fieldNumber < recordsList[rowNumber].size(); fieldNumber++) {
+                String curType = String.valueOf(headerMap.get(recordsList[0][fieldNumber]));
+                System.debug('curType=' + curType);
+                Object fieldValue = getAdduceValue(curType, recordsList[rowNumber][fieldNumber]);
+                sObj.put(recordsList[0][fieldNumber], fieldValue);  
+
+
+            }
+            sObjects.add(sObj);
+            System.debug('sObj=' + sObj);
+        }
+        update(sObjects);
+
+        //List<sObject> sObjects = new List<sObject>();
+        //for (Integer rowNumber = 1; rowNumber < records.size(); rowNumber++) {
+        //    String row = records[rowNumber].replace('[', ' ').replace(']', ' ');
+        //    List<String> fieldNames = new List<String>();
+        //    fieldNames = row.split(',');
+        //    sObject sObj = Schema.getGlobalDescribe().get(tableName).newSObject();          
+        //    for (Integer fieldNumber = 0; fieldNumber < fieldNames.size(); fieldNumber++) {
+        //        String curType = String.valueOf(headerMap.get(headerList[fieldNumber].trim()));                
+        //        Object fieldValue = fieldNames[fieldNumber].trim();
+        //        if (fieldValue != null) {
+        //            try {
+        //                if (curType == 'DOUBLE') {
+        //                    fieldValue = Double.valueOf(fieldNames[fieldNumber].trim());
+        //                }
+        //                else if (curType == 'DATE') {
+        //                    List<String> dateList = fieldNames[fieldNumber].trim().split('/');
+        //                    String currentDate = dateList[2] + '-' + dateList[1] + '-' + dateList[0];
+        //                    fieldValue = Date.valueOf(currentDate);
+        //                }
+        //                else if (curType == 'INTEGER') {
+        //                    fieldValue = Integer.valueOf(fieldNames[fieldNumber].trim());
+        //                }
+        //                else if (curType == 'BOOLEAN') {
+        //                    fieldValue = Boolean.valueOf(fieldNames[fieldNumber].trim());
+        //                }
+        //            }
+        //            catch(Exception e) {
+        //                fieldValue = null;
+        //            }
+        //        }
+        //        sObj.put(headerList[fieldNumber].trim(), fieldValue);
+        //    }
+        //    sObjects.add(sObj);
+        //}
+        //update(sObjects);
+    }
+
 
 }
