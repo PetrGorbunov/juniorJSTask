@@ -6,9 +6,38 @@
     <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.min.js')}"/>
     <apex:stylesheet value="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.css')}"/>
 
+    <style type="text/css">
+        ul.dropdown li { position: relative; }
+        ul.dropdown,
+        ul.dropdown-inside {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul.dropdown-inside {
+            position: absolute;
+            left: -9999px;
+        }
+        ul.dropdown li.dropdown-top {
+            display: inline;
+            float: left;
+            margin: 0 1px 0 0;
+        }
+        ul.dropdown li.dropdown-top a {
+            padding: 3px 10px 4px;
+            display: block;
+        }
+        ul.dropdown a.dropdown-top { background: #efefef; }
+        ul.dropdown a.dropdown-top:hover { padding: 2px 10px 5px; }
+        ul.dropdown li.dropdown-top:hover .dropdown-inside {
+            display: block;
+            left: 0;
+        }
+        ul.dropdown .dropdown-inside { background: #fff; }
+        ul.dropdown .dropdown-inside a:hover { background: #efefef; }
+    </style>
 
     <div id="Errors" ></div>
-    <div id="hello">Hello undercore &#9650; &#9660; &#8592; &larr;</div>
+    <!-- <div id="hello">Hello undercore &#9650; &#9660; &#8592; &larr;</div> -->
     
     <div id="divTableNames"></div>
     <div id="divTableFields"></div>
@@ -21,25 +50,25 @@
         <table id="resultTableTag" border="1">
             <thead id="tableHead"></thead>
             <tbody id="tableBody"></tbody>            
-        </table>
-    </div>
+        </table>    
 
-    <div id="pagination">
-        <select id="rowsOnPage">
-            <option value="5" >5</option>
-            <option value="10" >10</option>
-            <option value="18" >18</option>
+        <div id="pagination">
+            <select id="rowsOnPage" onchange="changePagination(this)">
+                <option value="5" >5</option>
+                <option value="10" >10</option>
+                <option value="18" >18</option>
 
-            <option value="25" >25</option>
-            <option value="50" >50</option>
-        </select>
+                <option value="25" >25</option>
+                <option value="50" >50</option>
+            </select>
 
-        <button id="firstPage">&lt;&lt;</button>
-        <button id="prevPage">&lt;</button>
-        <input id="currentPage" type="text" value="1" />
-        <span id="pagesCount"></span>
-        <button id="nextPage">&gt;</button>
-        <button id="lastPage">&gt;&gt;</button>
+            <button id="firstPage">&lt;&lt;</button>
+            <button id="prevPage">&lt;</button>
+            <input id="currentPage" type="text" value="1" />
+            <span id="pagesCount"></span>
+            <button id="nextPage">&gt;</button>
+            <button id="lastPage">&gt;&gt;</button>
+        </div>
     </div>
 
     <div id="buttonEditBlock" >
@@ -53,6 +82,9 @@
         console.log('UNDERSCORE_IS_WORKING=' + _.isEmpty({}));
 
         $('#spiner').show();
+        $('#divResultTable').hide();
+        $('#buttonEditBlock').hide();
+
 
         Visualforce.remoting.Manager.invokeAction(
             '{!$RemoteAction.GetRecordsWithJsUCController.getTableNames}',            
@@ -80,6 +112,11 @@
         function getFields(tableName) { 
             $("#divTableFields").empty();    
             $('#spiner').show();
+            $('#divResultTable').hide();
+            $('#buttonEditBlock').hide();
+
+            
+            // $('#pagination').hide();
 
             Visualforce.remoting.Manager.invokeAction(
                 '{!$RemoteAction.GetRecordsWithJsUCController.getFields}',
@@ -110,8 +147,11 @@
 
         function runQuery(field, direction) {
             $('#spiner').show();
+            $('#divResultTable').hide();
             $('#tableHead').empty();
             $('#tableBody').empty();
+            $('#buttonEditBlock').hide();
+
 
             console.log('field=' + field);
             console.log('direction=' + direction);
@@ -135,9 +175,17 @@
                 direction,
                 function(result, event) {
                     if (event.status) {   
-                        $('#spiner').hide();  
+                        $('#spiner').hide();
+                        $("#currentPage").val(1);  
+                        $('#divResultTable').show();
+
+
                         console.log('FROM runQuery()');
                         console.log('result=' + result);
+                        if (result.length == 0) {
+                            $('#divResultTable').hide();
+                            return;
+                        }
                         //for head
                         heads = [];
                         for (var iter = 0; iter < fieldsName.length; iter++) {
@@ -206,6 +254,10 @@
 
         function editRows() {
             console.log('from edit rows');
+            $('#spiner').show();
+            $('#buttonEditBlock').hide();
+
+
             var tableForChange = [];            
             $("#resultTableTag thead>tr,#resultTableTag tr[type='Edited']").each(function() { 
                 var arrayCurrentRow = [];
@@ -237,13 +289,17 @@
                 tableName,
                 function(result, event) {
                     if (event.status) {
+                        $('#spiner').hide();
+
                         console.log('from  GetRecordsWithJsUCController.saveListObjects()');
                         // $("#spiner").hide();
                     }       
                     else if (event.type === 'exception') {
+                        $('#spiner').hide();
                         $("#Errors").text(event.message + ". Look:" + event.where);
                     } 
                     else {
+                        $('#spiner').hide();
                         $("#Errors").text(event.message);
                     }
                 },
@@ -253,22 +309,70 @@
 
         }
 
+        function changePagination(rowsCount) {
+            // var rowsPageCount = rowsCount.value;
+            $("#currentPage").val('1');
+            paginationControl(records);
+        }
+
         //SUPPORT FUNCTION
-        function openDatepicker(action, id) {
+        function getDataView(dateFromBase, isDateOnly) {
+            var myDate = new Date(dateFromBase);
+            var day = myDate.getDate();
+            day = (day < 10) ? "0" + day : day; 
+
+            var month = myDate.getMonth() + 1;
+            month = (month < 10) ? "0" + month : month;
+
+            var hour = myDate.getHours();
+            hour = (hour < 10) ? "0" + hour : hour;
+
+            var minut = myDate.getMinutes();
+            minut = (minut < 10) ? "0" + minut : minut;
+
+            var second = myDate.getSeconds();
+            second = (second < 10) ? "0" + second : second;
+
+            // if (month < 10) {
+            //     month = "0" + month;
+            // }
+            var year = myDate.getFullYear();
+
+            if (isDateOnly) {
+                dateStr = year + '-' + month + '-' + day;
+            }
+            else {
+                dateStr = year + '-' + month + '-' + day + ' ' + hour + ':' + minut + ':' + second;
+            }
+
+            return dateStr;
+        }
+
+        function getReference(ref) {
+            return 'https://ap2.salesforce.com/' + ref;
+        }
+
+        // <!-- <a href=""></a> 'https://ap2.salesforce.com/' -->getReference
+
+        function openDatepicker(action) {
             console.log('from openDatepicker()');
-            console.log('action=' + action.tagName);
+            console.log('action=' + action.val);
+            var oldValue = $(action).val();
             // $(action).find('input')
-            $('#' + id).datepicker({
+
+            $(action).datepicker({
+                dateFormat: "yy-mm-dd",
                 onSelect: function(dateText, inst) {
-                    // $("#buttonEditBlock").show();
+                    $("#buttonEditBlock").show();
+                    console.log('onSelect datepicker');
                     var val = $(this).val();
                     console.log('onSelect val=' + val);
 
-                    // $(this).parents("tr").attr("class", "Edited");
+                    $(this).parents("tr").attr("type", "Edited");
                     $(this).parent().empty().html(val);
                 },
                 onClose: function(selectedDate) {
-                    $(this).parent().empty().html(911);                        
+                    $(this).parent().empty().html(oldValue);
                 }
             }).focus();
         }
@@ -304,7 +408,13 @@
             resultTableBodyView = $("#tmpResultTableBody").html();
             $('#tableBody').append(_.template(resultTableBodyView, {recordsView: recordsView}));
 
-            if (currentPage == 1) { 
+            if (currentPage == 1 && pagesCount == 1) { 
+                $('#firstPage').attr('disabled',true);
+                $('#prevPage').attr('disabled',true);                
+                $('#nextPage').attr('disabled',true);  
+                $('#lastPage').attr('disabled',true);  
+            } 
+            else if (currentPage == 1) {
                 $('#firstPage').attr('disabled',true);
                 $('#prevPage').attr('disabled',true);                
                 $('#nextPage').removeAttr('disabled');
@@ -333,10 +443,32 @@
 
         });
 
+        $('#prevPage').click( function(action) {
+            console.log('from prevPage()');
+            var currentPage =  parseInt($("#currentPage").val());
+            $("#currentPage").val(currentPage - 1);
+            paginationControl(records);
+
+        });
+
+        $('#firstPage').click( function(action) {
+            console.log('from firstPage()');
+            $("#currentPage").val(1);
+            paginationControl(records);
+        });
+
+        $('#lastPage').click( function(action) {
+            console.log('from lastPage()');
+            var lastPage = $("#pagesCount").text();
+            $("#currentPage").val(lastPage);
+            paginationControl(records);
+        });
+
         // var direction;
         $("#tableHead").click( function(currentRow) {
+            console.log('from tableHead()');
             activeField = currentRow.target || currentRow.srcElement;
-            if (activeField.tagName != 'TH') {
+            if (activeField.tagName != 'TD') {
                 return;
                 // activeField = activeField.
             }                    
@@ -347,6 +479,7 @@
             else {
                 direction = true;
             }
+            console.log('direction=' + direction);
 
             $(activeField).find( "span").remove();
             runQuery(activeField.textContent.trim(), direction);
@@ -359,6 +492,14 @@
 
             if(currentCell.tagName == 'INPUT') {
                 return;
+            } else if ($(currentCell).attr('type') == 'PICKLIST') {
+                // console.log('FROM PICKLIST CLOCKED');
+                // oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim();
+                // values = {names : ['select1', 'select2', 'select3']};
+                // selecValues = ['select1', 'select2', 'select3'];
+                // selectView = $("#tmpPicklist").html();
+                // $(currentCell).append(_.template(selectView, values));
+                // return;
             }
 
             // oldValue = currentCell.textContent;
@@ -379,17 +520,39 @@
             inputView = $("#tmpInput").html();
             $(currentCell).append(_.template(inputView, {object: object}));
 
-            $(currentCell).find('input').focus();
-            if ($(currentCell).attr('type') == 'DATE') {
-                openDatepicker(currentCell, 'edit');
-            }
+            var inputElement = $('#edit');
+            
 
-            $(currentCell).find('input').blur(function() {                
-                var val = $(this).val();
-                $(this).parents("tr").attr("type", "Edited");
-                $(this).parent().empty().html(val);
-                // $("#buttonEditBlock").show();
-            }); 
+            if ($(currentCell).attr('type') == 'DATE') {
+                openDatepicker(inputElement);
+            } 
+            else if ($(currentCell).attr('type') == 'PICKLIST') {
+
+            }   
+            else {
+                $(inputElement).focus();
+                $(inputElement).blur(function() {                
+                    var val = $(this).val();
+                    $(this).parents("tr").attr("type", "Edited");
+                    $(this).parent().empty().html(val);
+                    $("#buttonEditBlock").show();
+                });
+            }        
+            // var val = inputElement.val();
+            // $(val).parents("tr").attr("type", "Edited");
+            // $(val).parent().empty().html(val);
+            // $('#buttonEditBlock').show();
+
+            // if ($(currentCell).attr('type') == 'DATE') {
+            //     openDatepicker(currentCell, 'edit');
+            // }
+
+            // $(currentCell).find('input').blur(function() {                
+            //     var val = $(this).val();
+            //     $(this).parents("tr").attr("type", "Edited");
+            //     $(this).parent().empty().html(val);
+            //     $('#buttonEditBlock').show();
+            // }); 
 
         });
     </script>
@@ -398,12 +561,56 @@
 
 
     <!-- UNDERSCORE TEMPLATES -->
+    <script type="text/template" id="tmpPicklist">
+        <!-- <% console.log('from temp1 =' + this.innerHTML) %> -->
+        <% console.log('from temp1.1 =' + values) %>
+        <% console.log('from temp1.1.names =' + values.names) %>
+        <!-- <select id="picklistSelect" onchange="changePicklist(this)"> -->
+        
+        
+            
+            <ul class="dropdown">
+                <li class="dropdown-top">
+                    <a class="dropdown-top" href="/">default value</a>
+                    <ul class="dropdown-inside">
+                        <% _.each(values.names, function(value) { %>
+                            <li><a href="/"><%= value %></a></li>
+                        <% }); %> 
+                    </ul>
+                </li>
+            </ul>
+            
+        
+
+        
+<!--         <% _.each(this, function(name) { %> 
+            <% console.log('from temp2 =' + name) %>
+            <li><%= name %></li> 
+        <% }); %> -->
+        <!-- <select id="picklistSelect" onchange="changePicklist(this)">  -->
+
+<!--             <% for(var iter in names) { %>
+               <option value="<%= names[iter] %>"><%= values[names] %></option>
+           <% } %>   -->
+
+    <!--         <% _.each(picklistValues, function(value, key, list) { %>
+              
+                value
+            <% }); %> -->
+        <!-- </select> -->
+    </script>
+
+    
+
     <script type="text/template" id="tmpInput">
         <%  disabled = "disabled"; %>
         <%  if (object.edit == 'true') { disabled = '' } %>        
         <input id="edit" type="text" value="<%= object.value %>" <%= disabled %> />
-        <!-- <% 
-        if (object.dataType == 'DATE') {
+<!--         <% 
+        if (disabled='') {
+            $(#edit).focus();
+        }
+        if (object.dataType == 'DATE' && disabled == '') {
             openDatepicker(this, 'edit');
         }
         %> -->
@@ -448,12 +655,34 @@
                 <% _.each(recordsView, function(record, key, list) { %>
                     <tr> 
                         <% _.each(record.object.fieldsList, function(field, key, list) { %>
-                            <!-- <%  isDisabled = "";  %> -->
-                            <!-- <%  if (!field.isEdit) { isDisabled = "disabled" } %>   -->
                             <td type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
-                                <!-- <input  <%= isDisabled %> type="text" value="<%= field.fieldValue %>" />  -->
-                                <%= field.fieldValue %>
-                                
+                            <% if (field.fieldType == 'DATE' && !!field.fieldValue) { %>
+                                    <!-- console.log('from body template date=' + field.fieldValue); -->
+                                    <!-- field.fieldValue = '2016-12-24'; -->
+                                    <!-- field.fieldValue = getDataView(field.fieldValue, true); -->
+                                    <%= getDataView(field.fieldValue, true) %>
+                            <% } else if (field.fieldType == 'DATETIME' && !!field.fieldValue) { %>
+                                    <!-- field.fieldValue = getDataView(field.fieldValue, false); -->
+                                    <%= getDataView(field.fieldValue, false) %>
+                            <% } else if (field.fieldType == 'REFERENCE' && !!field.fieldValue) { %>
+                                   <a target="_blank" href="<%= getReference(field.fieldValue) %>"> <%= field.fieldValue %> </a>
+                            <% } else if (field.fieldType == 'PICKLIST') { %>                                
+                             <!--        <ol>
+                                      <li>Coffee</li>
+                                      <li>Tea</li>
+                                      <li>Milk</li>
+                                    </ol> -->
+                                        <%= field.fieldValue %>  
+                                    
+       
+
+                            <% } else { %>
+                                <%= field.fieldValue %>  
+
+
+
+
+                            <% } %>                             
                             </td> 
                         <% }); %>
                         <!-- <td><%= record.object.fieldsList[0].fieldValue %></td>                     -->
@@ -466,12 +695,12 @@
 
 
        
-    <script type="text/javascript"> 
+<!--     <script type="text/javascript"> 
         
 
         $("#hello").click( function() {
             console.log('hello clicked');
         });   
-    </script>
+    </script> -->
 
 </apex:page>

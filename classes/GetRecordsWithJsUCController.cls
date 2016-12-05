@@ -79,11 +79,26 @@ public with sharing class GetRecordsWithJsUCController {
         records = Database.query(query);
         Map<String,Schema.SObjectField> fieldMap = Schema.getGlobalDescribe().get(tableName).getDescribe().fields.getMap();
         Map<String,Schema.DisplayType> fieldTypeMap = new Map<String,Schema.DisplayType>();
+
+        Map<String, List<String>> piclistValuesMap = new Map<String, List<String>>();
+
         for (String field : fields) {
             Schema.SObjectField schemaField = fieldMap.get(field.trim());
             Schema.DisplayType fldType = schemaField.getDescribe().getType();
+            if (String.valueOf(fldType) == 'PICKLIST') {
+                System.debug('SPARTA:PICKLIST');
+                List<Schema.PicklistEntry> picklistEntries = fieldMap.get(field).getDescribe().getPickListValues();
+                List<String> picklistValues = new List<String>(); 
+                for (Schema.PicklistEntry picklistEntry : picklistEntries ) {
+                    picklistValues.add(picklistEntry.getValue());
+                }
+                piclistValuesMap.put(field, picklistValues);
+            }
             fieldTypeMap.put(field, fldType);
         }
+        System.debug('piclistValuesMap=' + piclistValuesMap);
+        //get picklist values
+        //List<Schema.PicklistEntry> pick_list_values = field_map.get(Field_name).getDescribe().getPickListValues();
 
         //create map for edit permission
         List <FieldPermissions> fieldPermissionsList = [
@@ -144,6 +159,8 @@ public with sharing class GetRecordsWithJsUCController {
                     resultValue = Double.valueOf(value);
                 }
                 else if (fieldType == 'DATE') {
+                    System.debug('getAdduceValue():value=' + value);
+                    resultValue = Date.valueOf(value);
                     //List<String> dateList = fieldNames[fieldNumber].trim().split('/');
                     //String currentDate = dateList[2] + '-' + dateList[1] + '-' + dateList[0];
                     //fieldValue = Date.valueOf(currentDate);
@@ -153,6 +170,9 @@ public with sharing class GetRecordsWithJsUCController {
                 }
                 else if (fieldType == 'BOOLEAN') {
                     resultValue = Boolean.valueOf(value);
+                }
+                else if (fieldType == 'PICKLIST') {
+
                 }
             }
             catch(Exception e) {
