@@ -115,7 +115,7 @@ public with sharing class GetRecordsWithJsUCController {
         //create result data object
         List<ResultObject> resultObjects = new List<ResultObject>();
         for (sObject record : records) {
-            ResultObject resultObject = new ResultObject(fieldTypeMap, record, editPermissionsMap);
+            ResultObject resultObject = new ResultObject(fieldTypeMap, record, editPermissionsMap, piclistValuesMap);
             resultObjects.add(resultObject);
         }
         return resultObjects;
@@ -124,13 +124,14 @@ public with sharing class GetRecordsWithJsUCController {
     public class ResultObject {        
         public List<StructureData> fieldsList { get; set; }   
 
-        public ResultObject(Map<String,Schema.DisplayType> fields, sObject record, Map<String,Boolean> editPermissionsMap) {
+        public ResultObject(Map<String,Schema.DisplayType> fields, sObject record, Map<String,Boolean> editPermissionsMap, Map<String, List<String>> piclistValuesMap) {
             this.fieldsList = new List<StructureData>(); 
             for (String fieldName : fields.keySet()) {
                 String fieldType = String.valueOf(fields.get(fieldName));               
                 Boolean isEdit =  editPermissionsMap.get(fieldName.toUpperCase());
                 isEdit = (isEdit == null) ? false : isEdit;
-                StructureData structureData = new StructureData(fieldName, record.get(fieldName), fieldType, isEdit);
+                List<String> picklistValues = piclistValuesMap.get(fieldName);
+                StructureData structureData = new StructureData(fieldName, record.get(fieldName), fieldType, isEdit, picklistValues);
                 this.fieldsList.add(structureData);                     
             }
         }
@@ -140,14 +141,18 @@ public with sharing class GetRecordsWithJsUCController {
         String fieldName { get; set; }
         Object fieldValue { get; set; }
         String fieldType { get; set; }
+        List<String> picklistValues { get; set; }
 
         Boolean isEdit { get; set; }
 
-        StructureData(String fieldName, Object fieldValue, String fieldType, Boolean isEdit) {
+        StructureData(String fieldName, Object fieldValue, String fieldType, Boolean isEdit, List<String> picklistValues) {
             this.fieldName = fieldName;
             this.fieldValue = fieldValue;
             this.fieldType = fieldType;
             this.isEdit = isEdit;
+            if (picklistValues != null) {
+                this.picklistValues = picklistValues;
+            }
         }           
     }
 

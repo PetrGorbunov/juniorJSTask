@@ -4,55 +4,77 @@
     <apex:includeScript value="{!$Resource.undercore}"/>
 
     <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.min.js')}"/>
-    <apex:stylesheet value="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.css')}"/>
+    <!-- <apex:stylesheet value="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.css')}"/> -->
+    <apex:stylesheet value="{!URLFOR($Resource.styles, 'loader_grey.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.styles, 'picklistEditing.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.styles, 'table.css')}" />
+
+
 
     <style type="text/css">
-        ul.dropdown li { position: relative; }
-        ul.dropdown,
-        ul.dropdown-inside {
-            list-style-type: none;
-            padding: 0;
+        /* select */
+        select:not([multiple]), 
+        button {
+          border-radius: 10px;          
         }
-        ul.dropdown-inside {
-            position: absolute;
-            left: -9999px;
+
+        select, 
+        button {
+          background: #efefef;
+          font-size:22px;
+          font-weight:normal;
         }
-        ul.dropdown li.dropdown-top {
-            display: inline;
-            float: left;
-            margin: 0 1px 0 0;
+
+        .parent {
+          width: 100%;
+          height: 100%;
         }
-        ul.dropdown li.dropdown-top a {
-            padding: 3px 10px 4px;
-            display: block;
+
+        .block {
+            margin: auto;
+            text-align: center;
+        }        
+
+        /*main styles*/
+        body {
+          background-color: #333333; /*//3e94ec*/
+          font-family: "Roboto", helvetica, arial, sans-serif;
+          font-size: 16px;
+          font-weight: 400;
+          text-rendering: optimizeLegibility;
         }
-        ul.dropdown a.dropdown-top { background: #efefef; }
-        ul.dropdown a.dropdown-top:hover { padding: 2px 10px 5px; }
-        ul.dropdown li.dropdown-top:hover .dropdown-inside {
-            display: block;
-            left: 0;
+
+        button:hover:enabled {
+          background: #4E5066;
+          color:#FFFFFF;
+          border-top: 1px solid #22262e;
+          border-bottom: 1px solid #22262e;
         }
-        ul.dropdown .dropdown-inside { background: #fff; }
-        ul.dropdown .dropdown-inside a:hover { background: #efefef; }
+
+        span {
+          color:#666B85;
+        }
+        
     </style>
 
-    <div id="Errors" ></div>
-    <!-- <div id="hello">Hello undercore &#9650; &#9660; &#8592; &larr;</div> -->
-    
-    <div id="divTableNames"></div>
-    <div id="divTableFields"></div>
-    
-    <div id="spiner" > 
-        <img src="/img/loading32.gif" /> 
+    <div class="parent">
+      <div id="Errors" class="block"></div>
+      <!-- <div id="hello">Hello undercore &#9650; &#9660; &#8592; &larr;</div> -->
+      
+      <div id="divTableNames" class="block" ></div>
+      <div id="divTableFields" class="block" ></div>
+      
+      <div id="spiner" class="loader" > 
+          <!-- <img src="/img/loading32.gif" />  -->
+      </div>
     </div>
-
     <div id="divResultTable">
-        <table id="resultTableTag" border="1">
+        <table id="resultTableTag" class="table-fill">
             <thead id="tableHead"></thead>
-            <tbody id="tableBody"></tbody>            
+            <tbody id="tableBody" class="table-hover"></tbody>            
         </table>    
 
-        <div id="pagination">
+        <div id="pagination" class="block">
             <select id="rowsOnPage" onchange="changePagination(this)">
                 <option value="5" >5</option>
                 <option value="10" >10</option>
@@ -64,14 +86,14 @@
 
             <button id="firstPage">&lt;&lt;</button>
             <button id="prevPage">&lt;</button>
-            <input id="currentPage" type="text" value="1" />
+            <input disabled="disabled" id="currentPage" type="text" value="1" />
             <span id="pagesCount"></span>
             <button id="nextPage">&gt;</button>
             <button id="lastPage">&gt;&gt;</button>
         </div>
     </div>
 
-    <div id="buttonEditBlock" >
+    <div id="buttonEditBlock" class="block">
         <button onclick="editRows()" id="buttonEdit" >Change</button>
     </div>
 
@@ -152,7 +174,6 @@
             $('#tableBody').empty();
             $('#buttonEditBlock').hide();
 
-
             console.log('field=' + field);
             console.log('direction=' + direction);
 
@@ -178,7 +199,6 @@
                         $('#spiner').hide();
                         $("#currentPage").val(1);  
                         $('#divResultTable').show();
-
 
                         console.log('FROM runQuery()');
                         console.log('result=' + result);
@@ -261,12 +281,12 @@
             var tableForChange = [];            
             $("#resultTableTag thead>tr,#resultTableTag tr[type='Edited']").each(function() { 
                 var arrayCurrentRow = [];
-                var elementCurrentRow = $(this).find('td');
+                var elementCurrentRow = $(this).find('td, th');
                 if (elementCurrentRow.length > 0) {
                     elementCurrentRow.each(function() {
                         if( $(this).attr('edit') == 'true' || $(this).index() == 0) {
                             cellValue = $(this).clone().children().remove().end().text().replace(/\r|\n/g, '').trim(); 
-                            arrayCurrentRow.push(cellValue);
+                            arrayCurrentRow.push(cellValue);                            
                         }
                     });
                     tableForChange.push(arrayCurrentRow);
@@ -468,7 +488,7 @@
         $("#tableHead").click( function(currentRow) {
             console.log('from tableHead()');
             activeField = currentRow.target || currentRow.srcElement;
-            if (activeField.tagName != 'TD') {
+            if (activeField.tagName != 'TH') {
                 return;
                 // activeField = activeField.
             }                    
@@ -487,19 +507,54 @@
 
         $("#tableBody").click( function(action) {
             console.log('from tableBody click');
-            currentCell = action.target || action.srcElement;
-            console.log('currentCell=' + currentCell.textContent.replace(/\r|\n/g, '').trim());
+            console.log('SPARTAAAAAAAAAAAAAA!!!!!!!!!!!!!!');
 
+
+            currentCell = action.target || action.srcElement;
+            console.log('SPARTAAAAAAAAAAAAAA!!!!!!!!!!!!!!:currentCell=' + currentCell.innerHtml);
+
+            if ($(currentCell).attr('edit') == 'false') {
+                return;
+            }
+            console.log('currentCell=' + currentCell.textContent.replace(/\r|\n/g, '').trim());
             if(currentCell.tagName == 'INPUT') {
                 return;
-            } else if ($(currentCell).attr('type') == 'PICKLIST') {
-                // console.log('FROM PICKLIST CLOCKED');
-                // oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim();
-                // values = {names : ['select1', 'select2', 'select3']};
+            }
+            // else if (currentCell.tagName == 'LI') {
+            //   console.log('from LI');
+            //   // currentCell = action.target || action.srcElement;
+            //   console.log('currentCell=' + currentCell.innerHTML);
+            // } 
+            else if ($(currentCell).attr('type') == 'PICKLIST') {
+                if ($(currentCell).is(':has(ul.dropdown)')) {
+                      console.log('from LI');
+                      console.log('currentCell=' + currentCell.innerHTML);
+                      return;
+
+
+                }
+                console.log('FROM PICKLIST CLOCKED');
+                oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim();
+                // $(currentCell).empty();
+                console.log('FROM PICKLIST.oldValue=' + oldValue);
+                
+                console.log('FROM PICKLIST.picklist=' + $(currentCell).attr('picklist'));
+                // var picklist = [];
+                // picklist.push(oldValue);
+                var picklist = ($(currentCell).attr('picklist').split(','));
+                picklist.unshift(oldValue);
+                $(currentCell).empty();
+
+
+                values = {names : picklist};
+                console.log('FROM PICKLIST.values=' + values);
+                console.log('FROM PICKLIST.values.names=' + values.names);
+                console.log('FROM PICKLIST.values.names[0]=' + values.names[0]);
+                
                 // selecValues = ['select1', 'select2', 'select3'];
-                // selectView = $("#tmpPicklist").html();
-                // $(currentCell).append(_.template(selectView, values));
-                // return;
+                selectView = $("#tmpPicklist").html();
+                $(currentCell).append(_.template(selectView, values));
+                return;
             }
 
             // oldValue = currentCell.textContent;
@@ -527,7 +582,10 @@
                 openDatepicker(inputElement);
             } 
             else if ($(currentCell).attr('type') == 'PICKLIST') {
-
+               // var picklist = $(currentCell).attr('picklist').split(',');
+               // values = {names : picklist};
+               // selectView = $("#tmpPicklist").html();
+               // $(currentCell).append(_.template(selectView, values));
             }   
             else {
                 $(inputElement).focus();
@@ -555,6 +613,11 @@
             // }); 
 
         });
+
+        // $(".dropdown-inside").click( function(action) {
+            
+        
+        // });
     </script>
 
 
@@ -565,16 +628,22 @@
         <!-- <% console.log('from temp1 =' + this.innerHTML) %> -->
         <% console.log('from temp1.1 =' + values) %>
         <% console.log('from temp1.1.names =' + values.names) %>
+<!--         <% var oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim(); %>
+        <%   $(currentCell).empty(); %> -->
         <!-- <select id="picklistSelect" onchange="changePicklist(this)"> -->
         
         
             
             <ul class="dropdown">
                 <li class="dropdown-top">
-                    <a class="dropdown-top" href="/">default value</a>
+                    <% var oldValue = values.names[0]; %>
+                    <%  if (oldValue == '') { oldValue = values.names[1]; } %>   
+                    <span class="dropdown-top" ><%= oldValue %></span>
                     <ul class="dropdown-inside">
-                        <% _.each(values.names, function(value) { %>
-                            <li><a href="/"><%= value %></a></li>
+                        <% _.each(values.names, function(value, key) { %>
+                            <%  if (key != 0) { %>
+                              <li><span ><%= value %></span></li>
+                            <% } %>
                         <% }); %> 
                     </ul>
                 </li>
@@ -643,7 +712,7 @@
                     <% _.each(heads, function(head, key, list) { %>
                         <%  sortClass = ""; direction = ''  %>
                         <%  if (head.isSort) { if(head.direction) { direction = '&#9650;'; sortClass = "asc";  } else {direction = '&#9660;';sortClass = "desc";} } %>
-                        <td edit="<%= head.isEdit %>" direction="<%= sortClass  %>"><%= head.name %><span><%= direction %></span> </td>
+                        <th class="text-left" edit="<%= head.isEdit %>" direction="<%= sortClass  %>"><%= head.name %><span><%= direction %></span> </th>
                         <!-- <th><%= head.name + '&#9650;' %></th> -->
                     <% }); %>
                 </tr>
@@ -655,35 +724,52 @@
                 <% _.each(recordsView, function(record, key, list) { %>
                     <tr> 
                         <% _.each(record.object.fieldsList, function(field, key, list) { %>
-                            <td type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
+                            <!-- <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" >  -->
                             <% if (field.fieldType == 'DATE' && !!field.fieldValue) { %>
                                     <!-- console.log('from body template date=' + field.fieldValue); -->
                                     <!-- field.fieldValue = '2016-12-24'; -->
                                     <!-- field.fieldValue = getDataView(field.fieldValue, true); -->
+                                    <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
                                     <%= getDataView(field.fieldValue, true) %>
+                                    </td> 
                             <% } else if (field.fieldType == 'DATETIME' && !!field.fieldValue) { %>
                                     <!-- field.fieldValue = getDataView(field.fieldValue, false); -->
+                                    <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
                                     <%= getDataView(field.fieldValue, false) %>
+                                    </td> 
                             <% } else if (field.fieldType == 'REFERENCE' && !!field.fieldValue) { %>
+                                  <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
                                    <a target="_blank" href="<%= getReference(field.fieldValue) %>"> <%= field.fieldValue %> </a>
+                                   </td> 
                             <% } else if (field.fieldType == 'PICKLIST') { %>                                
                              <!--        <ol>
                                       <li>Coffee</li>
                                       <li>Tea</li>
                                       <li>Milk</li>
                                     </ol> -->
+                                    <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" picklist="<%= field.picklistValues %>"> 
                                         <%= field.fieldValue %>  
-                                    
+                                          <!-- <ol>
+                                        <% _.each(field.picklistValues, function(select) { %>
+                                        <%    console.log('from template picklist_each:' + select) %>                                          
+                                            <li><%= select %></li>                                               
+                                        <% }); %>
+                                          </ol>
+                                        <% console.log('from template picklist:' + field.picklistValues) %>
+                                        <% console.log('from template picklist[0]:' + field.picklistValues[0]) %> -->
+
+                                    </td> 
        
 
                             <% } else { %>
-                                <%= field.fieldValue %>  
-
+                                <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
+                                <%= field.fieldValue %>
+                                </td> 
 
 
 
                             <% } %>                             
-                            </td> 
+                            <!-- </td>  -->
                         <% }); %>
                         <!-- <td><%= record.object.fieldsList[0].fieldValue %></td>                     -->
                     </tr>
