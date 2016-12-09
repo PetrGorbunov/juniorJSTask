@@ -1,0 +1,82 @@
+select:not([multiple]), 
+button {
+      border-radius: 10px;          
+}
+
+select, 
+button {
+    background: #efefef;
+    font-size:22px;
+    font-weight:normal;
+}
+
+.parent {
+  width: 100%;
+  height: 100%;
+}
+
+.block {
+    margin: auto;
+    text-align: center;
+} 
+
+body {
+    background-color: #333333;
+    font-family: "Roboto", helvetica, arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    text-rendering: optimizeLegibility;
+}
+
+button:hover:enabled {
+    background: #4E5066;
+    color:#FFFFFF;
+    border-top: 1px solid #22262e;
+    border-bottom: 1px solid #22262e;
+}
+
+span {
+    color:#666B85;
+}
+
+input {
+    background:#FFFFFF;
+    padding:20px;
+    text-align:left;
+    vertical-align:middle;
+    font-weight:300;
+    font-size:18px;
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #C1C3D1;
+}
+
+/* popup menu */
+.b-popup{
+    width:100%;
+    min-height:100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow:hidden;
+    position:fixed;
+    top:0px;
+}
+
+.b-popup .b-popup-content{
+    margin:40px auto 0px auto;
+    width:20%;
+    height: 40%;
+    padding:10px;
+    background-color: #c5c5c5;
+    border-radius:5px;
+    box-shadow: 0px 0px 10px #000;
+    text-align: center;
+}
+
+.b-container{
+    width:100%;
+    height:100%;
+    
+    margin:0px auto;
+    padding:10px;
+    font-size:30px;
+    color: #fff;
+}

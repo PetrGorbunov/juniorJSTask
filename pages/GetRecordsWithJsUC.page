@@ -8,88 +8,7 @@
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'loader_grey.css')}" />
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'picklistEditing.css')}" />
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'table.css')}" />
-
-    <script src="{!URLFOR($Resource.timepicker, 'Simple-Time-Input-Spinner-Plugin-With-jQuery-TimingField/timingfield.js')}"/>
-    <apex:stylesheet value="{!URLFOR($Resource.timepicker, 'Simple-Time-Input-Spinner-Plugin-With-jQuery-TimingField/timingfield.css')}"/>
-
-
-
-    <style type="text/css">
-    
-
-        /* select ************************************************************************************************/
-        select:not([multiple]), 
-        button {
-          border-radius: 10px;          
-        }
-
-        select, 
-        button {
-          background: #efefef;
-          font-size:22px;
-          font-weight:normal;
-        }
-
-        .parent {
-          width: 100%;
-          height: 100%;
-        }
-
-        .block {
-            margin: auto;
-            text-align: center;
-        }        
-
-        /*main styles*/
-        body {
-          background-color: #333333; /*//3e94ec*/
-          font-family: "Roboto", helvetica, arial, sans-serif;
-          font-size: 16px;
-          font-weight: 400;
-          text-rendering: optimizeLegibility;
-        }
-
-        button:hover:enabled {
-          background: #4E5066;
-          color:#FFFFFF;
-          border-top: 1px solid #22262e;
-          border-bottom: 1px solid #22262e;
-        }
-
-        span {
-          color:#666B85;
-        }
-
-        /* popup menu */
-        .b-popup{
-            width:100%;
-            min-height:100%;
-            background-color: rgba(0,0,0,0.5);
-            overflow:hidden;
-            position:fixed;
-            top:0px;
-        }
-        .b-popup .b-popup-content{
-            margin:40px auto 0px auto;
-            width:20%;
-            height: 40%;
-            padding:10px;
-            background-color: #c5c5c5;
-            border-radius:5px;
-            box-shadow: 0px 0px 10px #000;
-        }
-
-        /*background-color: #ccc;*/
-        .b-container{
-            width:100%;
-            height:100%;
-            
-            margin:0px auto;
-            padding:10px;
-            font-size:30px;
-            color: #fff;
-        }
-    </style>
+    <apex:stylesheet value="{!URLFOR($Resource.styles, 'main.css')}" />
 
     <div class="b-popup" id="popup1" >
         <div id="picklist" class="b-popup-content">
@@ -123,23 +42,15 @@
   <div class="b-container">
     <div class="parent">
 
-      <!-- <input type="text" class="timing" onclick="TimePickerShow();" /> -->
-
-      
-
-
-
-      <div id="Errors" class="block"></div>
-      
-      <!-- <div id="hello">Hello undercore &#9650; &#9660; &#8592; &larr;</div> -->
+      <!-- <input type="text" class="timing" onclick="TimePickerShow();" /> --> 
+      <div id="Errors" class="block"></div>      
       
       <div id="divTableNames" class="block" ></div>
       <div id="divTableFields" class="block" ></div>
       
-      <div id="spiner" class="loader" > 
-          <!-- <img src="/img/loading32.gif" />  -->
-      </div>
+      <div id="spiner" class="loader" ></div>
     </div>
+
     <div id="divResultTable">
         <table id="resultTableTag" class="table-fill">
             <thead id="tableHead"></thead>
@@ -151,14 +62,13 @@
                 <option value="5" >5</option>
                 <option value="10" >10</option>
                 <option value="18" >18</option>
-
                 <option value="25" >25</option>
                 <option value="50" >50</option>
             </select>
 
             <button id="firstPage">&lt;&lt;</button>
             <button id="prevPage">&lt;</button>
-            <input disabled="disabled" id="currentPage" type="text" value="1" />
+            <input disabled="disabled" id="currentPage" type="text" value="1" size="3" />
             <span id="pagesCount"></span>
             <button id="nextPage">&gt;</button>
             <button id="lastPage">&gt;&gt;</button>
@@ -171,18 +81,12 @@
   </div>
 
     <script type="text/javascript">
-        // $('#hello').text('NEW TEXT  &#9650; &#9660; &#8592; &larr; ');
-
         console.log('UNDERSCORE_IS_WORKING=' + _.isEmpty({}));
-
         $('#spiner').show();
         $('#divResultTable').hide();
         $('#buttonEditBlock').hide();
-
         PopUpHide();
-
         TimePickerHide();
-
 
         Visualforce.remoting.Manager.invokeAction(
             '{!$RemoteAction.GetRecordsWithJsUCController.getTableNames}',            
@@ -211,18 +115,14 @@
             $("#divTableFields").empty();    
             $('#spiner').show();
             $('#divResultTable').hide();
-            $('#buttonEditBlock').hide();
-
-            
-            // $('#pagination').hide();
+            $('#buttonEditBlock').hide();            
 
             Visualforce.remoting.Manager.invokeAction(
                 '{!$RemoteAction.GetRecordsWithJsUCController.getFields}',
                 tableName.value,
                 function(result, event) {
                     if (event.status) {      
-                        $('#spiner').hide();            
-                       
+                        $('#spiner').hide();                       
                         fields = [];
                         for (var iter = 0; iter < result.length; iter++) {  
                             fields.push({name: result[iter]}); 
@@ -250,19 +150,12 @@
             $('#tableBody').empty();
             $('#buttonEditBlock').hide();
 
-            console.log('field=' + field);
-            console.log('direction=' + direction);
-
             tableName = $("#selectTableNames").val();
             fieldsName = $("#selectFieldNames").val(); 
             if (_.indexOf(fieldsName, 'Id') == -1) {
                 console.log('no Id');
                 fieldsName.unshift('Id');
             }
-
-            console.log('fieldsName[0]=' + fieldsName[0]);
-            console.log('selectTableNames=' + tableName);
-            console.log('fieldsName=' + fieldsName);
 
             Visualforce.remoting.Manager.invokeAction(
                 '{!$RemoteAction.GetRecordsWithJsUCController.runQuery}',
@@ -276,8 +169,6 @@
                         $("#currentPage").val(1);  
                         $('#divResultTable').show();
 
-                        console.log('FROM runQuery()');
-                        console.log('result=' + result);
                         if (result.length == 0) {
                             $('#divResultTable').hide();
                             return;
@@ -308,34 +199,13 @@
                         resultTableHeadView = $("#tmpResultTableHead").html();
                         $('#tableHead').append(_.template(resultTableHeadView, {heads: heads}));
 
-
-                        // for body
-
-
-                        var isR = "" 
-                        if ( !result[0].fieldsList[0].isEdit ) {
-                            isR = "disabled";
-                        }
-                        console.log('field.isEdit=' + result[0].fieldsList[0].isEdit + ';isR=' + isR);
-
-                        console.log('result[0].fieldsList[0].fieldName=' + result[0].fieldsList[0].fieldValue);
-                        console.log('result[0].fieldsList[0].isEdit=' + result[0].fieldsList[0].isEdit);
-
                         records = [];
-
                         for (var iter = 0; iter < result.length; iter++) {
                             records.push({
                                 object: result[iter]
                             });
                         }
-
                         paginationControl(records);
-
-                        // resultTableBodyView = $("#tmpResultTableBody").html();
-                        // $('#tableBody').append(_.template(resultTableBodyView, {records: records}));
-
-
-
                     }
                     else if (event.type === 'exception') {
                         $("#Errors").text(event.message + ". Look:" + event.where);
@@ -353,7 +223,6 @@
             $('#spiner').show();
             $('#buttonEditBlock').hide();
 
-
             var tableForChange = [];            
             $("#resultTableTag thead>tr,#resultTableTag tr[type='Edited']").each(function() { 
                 var arrayCurrentRow = [];
@@ -370,12 +239,6 @@
             });
 
             var myJsonString = JSON.stringify(tableForChange);
-            console.log('myJsonString=' + myJsonString);
-            console.log('tableForChange.length=' + tableForChange.length);
-            console.log('tableForChange[0].length=' + tableForChange[0].length);
-            console.log('tableForChange[1].length=' + tableForChange[1].length);
-
-
             var tableName = $("#selectTableNames").val();
             console.log('tableName=' + tableName);
 
@@ -386,9 +249,6 @@
                 function(result, event) {
                     if (event.status) {
                         $('#spiner').hide();
-
-                        console.log('from  GetRecordsWithJsUCController.saveListObjects()');
-                        // $("#spiner").hide();
                     }       
                     else if (event.type === 'exception') {
                         $('#spiner').hide();
@@ -401,17 +261,16 @@
                 },
                 {escape: false}
             );
-
-
         }
 
-        function changePagination(rowsCount) {
-            // var rowsPageCount = rowsCount.value;
-            $("#currentPage").val('1');
-            paginationControl(records);
-        }
 
-        //SUPPORT FUNCTION **********************************************************************************************
+
+//******************************SUPPORT FUNCTIONS**********************************************************************************************
+          function changePagination(rowsCount) {
+              $("#currentPage").val('1');
+              paginationControl(records);
+          }
+
           function cancelSelect() {
             console.log('from cancelSelect cliced');
             $("#picklist").empty();
@@ -433,18 +292,13 @@
             console.log('picklistValue=' + picklistValue);
 
             console.log('newValue=' + newValue);
-            $(currentCell).text(picklistValue);
-            // console.log('newValue.length=' + newValue.length);
-            // console.log('newValue[0]=' + newValue[0].text());
-
-            
+            $(currentCell).text(picklistValue);           
             $("#picklist").empty();
             PopUpHide();
             $('#buttonEditBlock').show();
             $(currentCell).parents("tr").attr("type", "Edited");
 
           }
-
 
           function PopUpShow(){
               $("#popup1").show();
@@ -479,9 +333,6 @@
             var second = myDate.getSeconds();
             second = (second < 10) ? "0" + second : second;
 
-            // if (month < 10) {
-            //     month = "0" + month;
-            // }
             var year = myDate.getFullYear();
 
             if (isDateOnly) {
@@ -498,13 +349,10 @@
             return 'https://ap2.salesforce.com/' + ref;
         }
 
-        // <!-- <a href=""></a> 'https://ap2.salesforce.com/' -->getReference
-
         function openDatepicker(action) {
             console.log('from openDatepicker()');
             console.log('action=' + action.val);
             var oldValue = $(action).val();
-            // $(action).find('input')
 
             $(action).datepicker({
                 dateFormat: "yy-mm-dd",
@@ -580,7 +428,7 @@
             }       
         }
 
-        // <!-- ACTION FUNCTION -->
+//****************************************************ACTION FUNCTIONS***************************************************************
         $('#nextPage').click( function(action) {
             console.log('from nexrPage()');
             var currentPage =  parseInt($("#currentPage").val());
@@ -613,7 +461,7 @@
         // var direction;
         $("#tableHead").click( function(currentRow) {
             console.log('from tableHead()');
-            activeField = currentRow.target || currentRow.srcElement;
+            var activeField = currentRow.target || currentRow.srcElement;
             if (activeField.tagName != 'TH') {
                 return;
                 // activeField = activeField.
@@ -634,11 +482,7 @@
         $("#tableBody").click( function(action) {
             console.log('from tableBody click');
             console.log('SPARTAAAAAAAAAAAAAA!!!!!!!!!!!!!!');
-
-
-
             currentCell = action.target || action.srcElement;
-            console.log('SPARTAAAAAAAAAAAAAA!!!!!!!!!!!!!!:currentCell=' + currentCell.innerHtml);
 
             if ($(currentCell).attr('edit') == 'false') {
                 return;
@@ -647,42 +491,17 @@
             if(currentCell.tagName == 'INPUT') {
                 return;
             }
-            // else if (currentCell.tagName == 'LI') {
-            //   console.log('from LI');
-            //   // currentCell = action.target || action.srcElement;
-            //   console.log('currentCell=' + currentCell.innerHTML);
-            // } 
+
             else if ($(currentCell).attr('type') == 'PICKLIST' || $(currentCell).attr('type') == 'MULTIPICKLIST') {
-                // if ($(currentCell).is(':has(ul.dropdown)')) {
-                //       console.log('from LI');
-                //       console.log('currentCell=' + currentCell.innerHTML);
-                //       return;
-
-
-                // }
-                console.log('FROM PICKLIST CLOCKED');
+    
                 oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim();
-                // $(currentCell).empty();
-                console.log('FROM PICKLIST.oldValue=' + oldValue);
-                
-                console.log('FROM PICKLIST.picklist=' + $(currentCell).attr('picklist'));
-                // var picklist = [];
-                // picklist.push(oldValue);
+ 
                 var picklist = ($(currentCell).attr('picklist').split(','));
-                // picklist.unshift(oldValue);
-                // $(currentCell).empty();
+        
 
 
                 values = {names : picklist};
-                console.log('FROM PICKLIST.values=' + values);
-                console.log('FROM PICKLIST.values.names=' + values.names);
-                console.log('FROM PICKLIST.values.names[0]=' + values.names[0]);
-                
 
-                // selectView = $("#tmpPicklist").html();
-                // $(currentCell).append(_.template(selectView, values));
-
-                // $("#picklist").show();
                 PopUpShow();
                 selectView = $("#tmpPicklistSelect").html();
                 $("#picklist").append(_.template(selectView, values));
@@ -715,10 +534,7 @@
                 openDatepicker(inputElement);
             } 
             else if ($(currentCell).attr('type') == 'PICKLIST') {
-               // var picklist = $(currentCell).attr('picklist').split(',');
-               // values = {names : picklist};
-               // selectView = $("#tmpPicklist").html();
-               // $(currentCell).append(_.template(selectView, values));
+
             }   
             else {
                 $(inputElement).focus();
@@ -728,46 +544,33 @@
                     $(this).parent().empty().html(val);
                     $("#buttonEditBlock").show();
                 });
-            }        
-            // var val = inputElement.val();
-            // $(val).parents("tr").attr("type", "Edited");
-            // $(val).parent().empty().html(val);
-            // $('#buttonEditBlock').show();
+            }      
 
-            // if ($(currentCell).attr('type') == 'DATE') {
-            //     openDatepicker(currentCell, 'edit');
-            // }
-
-            // $(currentCell).find('input').blur(function() {                
-            //     var val = $(this).val();
-            //     $(this).parents("tr").attr("type", "Edited");
-            //     $(this).parent().empty().html(val);
-            //     $('#buttonEditBlock').show();
-            // }); 
 
         });
         
 
-        // $(".timing").timingfield();
+        $(window).keydown(function(event) {      
+            //pressed enter      
+            if(event.keyCode == 13) {   
+                $("#edit").blur();
+                $("#buttonEditBlock").show();
+                $("#edit").parent("tr").attr("class", "Edited");
+            }
 
+            //pressed Esc
+            if(event.keyCode == 27) {   
+                $('#edit').parent().empty().html(oldValue);
+                $('#edit').blur();
+            }
+        });
 
-
-        // $("#cancelSelect").click( function(action) {
-        //   console.log('from cancelSelect cliced');
-        //   PopUpHide();
-        // });
-
-
-        // $(".dropdown-inside").click( function(action) {
-            
-        
-        // });
     </script>
 
 
 
 
-    <!-- UNDERSCORE TEMPLATES -->
+<!--******************************************************** UNDERSCORE TEMPLATES ***********************************************************-->
     <script type="text/template" id="tmpPicklistSelect">
       <!-- picklist -->
       <div>
@@ -810,26 +613,7 @@
                         <% }); %> 
                     </ul>
                 </li>
-            </ul>
-            
-        
-
-        
-<!--         <% _.each(this, function(name) { %> 
-            <% console.log('from temp2 =' + name) %>
-            <li><%= name %></li> 
-        <% }); %> -->
-        <!-- <select id="picklistSelect" onchange="changePicklist(this)">  -->
-
-<!--             <% for(var iter in names) { %>
-               <option value="<%= names[iter] %>"><%= values[names] %></option>
-           <% } %>   -->
-
-    <!--         <% _.each(picklistValues, function(value, key, list) { %>
-              
-                value
-            <% }); %> -->
-        <!-- </select> -->
+            </ul>            
     </script>
 
     
@@ -838,14 +622,6 @@
         <%  disabled = "disabled"; %>
         <%  if (object.edit == 'true') { disabled = '' } %>        
         <input id="edit" type="text" value="<%= object.value %>" <%= disabled %> />
-<!--         <% 
-        if (disabled='') {
-            $(#edit).focus();
-        }
-        if (object.dataType == 'DATE' && disabled == '') {
-            openDatepicker(this, 'edit');
-        }
-        %> -->
     </script>
 
     <script type='text/template' id="tmpTableNames">
@@ -905,21 +681,10 @@
                                    <a target="_blank" href="<%= getReference(field.fieldValue) %>"> <%= field.fieldValue %> </a>
                                    </td> 
                             <% } else if (field.fieldType == 'PICKLIST' || field.fieldType == 'MULTIPICKLIST') { %>                                
-                             <!--        <ol>
-                                      <li>Coffee</li>
-                                      <li>Tea</li>
-                                      <li>Milk</li>
-                                    </ol> -->
+
                                     <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" picklist="<%= field.picklistValues %>"> 
                                         <%= field.fieldValue %>  
-                                          <!-- <ol>
-                                        <% _.each(field.picklistValues, function(select) { %>
-                                        <%    console.log('from template picklist_each:' + select) %>                                          
-                                            <li><%= select %></li>                                               
-                                        <% }); %>
-                                          </ol>
-                                        <% console.log('from template picklist:' + field.picklistValues) %>
-                                        <% console.log('from template picklist[0]:' + field.picklistValues[0]) %> -->
+
 
                                     </td> 
        
@@ -939,17 +704,4 @@
                 <% }); %>
             <!-- </tbody>      -->
     </script>
-
-
-
-
-       
-<!--     <script type="text/javascript"> 
-        
-
-        $("#hello").click( function() {
-            console.log('hello clicked');
-        });   
-    </script> -->
-
 </apex:page>
