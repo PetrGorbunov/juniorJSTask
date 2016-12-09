@@ -85,7 +85,9 @@ public with sharing class GetRecordsWithJsUCController {
         for (String field : fields) {
             Schema.SObjectField schemaField = fieldMap.get(field.trim());
             Schema.DisplayType fldType = schemaField.getDescribe().getType();
-            if (String.valueOf(fldType) == 'PICKLIST') {
+            System.debug(field + ':' + String.valueOf(fldType));
+
+            if (String.valueOf(fldType) == 'PICKLIST' || String.valueOf(fldType) == 'MULTIPICKLIST') {
                 System.debug('SPARTA:PICKLIST');
                 List<Schema.PicklistEntry> picklistEntries = fieldMap.get(field).getDescribe().getPickListValues();
                 List<String> picklistValues = new List<String>(); 
@@ -164,6 +166,13 @@ public with sharing class GetRecordsWithJsUCController {
                     resultValue = Double.valueOf(value);
                 }
                 else if (fieldType == 'DATE') {
+                    System.debug('getAdduceValue():value=' + value);
+                    resultValue = Date.valueOf(value);
+                    //List<String> dateList = fieldNames[fieldNumber].trim().split('/');
+                    //String currentDate = dateList[2] + '-' + dateList[1] + '-' + dateList[0];
+                    //fieldValue = Date.valueOf(currentDate);
+                }
+                else if (fieldType == 'DATETIME') {
                     System.debug('getAdduceValue():value=' + value);
                     resultValue = Date.valueOf(value);
                     //List<String> dateList = fieldNames[fieldNumber].trim().split('/');

@@ -4,15 +4,20 @@
     <apex:includeScript value="{!$Resource.undercore}"/>
 
     <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.min.js')}"/>
-    <!-- <apex:stylesheet value="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.css')}"/> -->
+    <apex:stylesheet value="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.css')}"/>
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'loader_grey.css')}" />
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'picklistEditing.css')}" />
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'table.css')}" />
 
+    <script src="{!URLFOR($Resource.timepicker, 'Simple-Time-Input-Spinner-Plugin-With-jQuery-TimingField/timingfield.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.timepicker, 'Simple-Time-Input-Spinner-Plugin-With-jQuery-TimingField/timingfield.css')}"/>
+
 
 
     <style type="text/css">
-        /* select */
+    
+
+        /* select ************************************************************************************************/
         select:not([multiple]), 
         button {
           border-radius: 10px;          
@@ -54,11 +59,78 @@
         span {
           color:#666B85;
         }
-        
+
+        /* popup menu */
+        .b-popup{
+            width:100%;
+            min-height:100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow:hidden;
+            position:fixed;
+            top:0px;
+        }
+        .b-popup .b-popup-content{
+            margin:40px auto 0px auto;
+            width:20%;
+            height: 40%;
+            padding:10px;
+            background-color: #c5c5c5;
+            border-radius:5px;
+            box-shadow: 0px 0px 10px #000;
+        }
+
+        /*background-color: #ccc;*/
+        .b-container{
+            width:100%;
+            height:100%;
+            
+            margin:0px auto;
+            padding:10px;
+            font-size:30px;
+            color: #fff;
+        }
     </style>
 
+    <div class="b-popup" id="popup1" >
+        <div id="picklist" class="b-popup-content">
+          
+        </div>
+    </div>
+    <div class="b-popup" id="popup2" >
+      <div id="timepicker" class="b-popup-content">
+        <div>Set time:</div>
+        <div id="hourPicker">
+          H:
+          <button id="minusHour">-</button>
+          <input type="text" value="0" id="inputHour" disabled="disabled" size="2" />
+          <button id="plusHour">+</button>
+        </div>
+        <div id="minutPicker">
+          M:
+          <button id="minusMinut">-</button>
+          <input type="text" value="0" id="inputMinut" disabled="disabled" size="2" />
+          <button id="plusMinut">+</button>
+        </div>
+        <div id="secPicker">
+          S:
+          <button id="minusSec">-</button>
+          <input type="text" value="0" id="inputSec" disabled="disabled" size="2" />
+          <button id="plusSec">+</button>
+        </div>
+      </div>
+    </div>
+
+  <div class="b-container">
     <div class="parent">
+
+      <!-- <input type="text" class="timing" onclick="TimePickerShow();" /> -->
+
+      
+
+
+
       <div id="Errors" class="block"></div>
+      
       <!-- <div id="hello">Hello undercore &#9650; &#9660; &#8592; &larr;</div> -->
       
       <div id="divTableNames" class="block" ></div>
@@ -96,7 +168,7 @@
     <div id="buttonEditBlock" class="block">
         <button onclick="editRows()" id="buttonEdit" >Change</button>
     </div>
-
+  </div>
 
     <script type="text/javascript">
         // $('#hello').text('NEW TEXT  &#9650; &#9660; &#8592; &larr; ');
@@ -106,6 +178,10 @@
         $('#spiner').show();
         $('#divResultTable').hide();
         $('#buttonEditBlock').hide();
+
+        PopUpHide();
+
+        TimePickerHide();
 
 
         Visualforce.remoting.Manager.invokeAction(
@@ -335,7 +411,57 @@
             paginationControl(records);
         }
 
-        //SUPPORT FUNCTION
+        //SUPPORT FUNCTION **********************************************************************************************
+          function cancelSelect() {
+            console.log('from cancelSelect cliced');
+            $("#picklist").empty();
+            PopUpHide();
+          }
+
+          function selectedPickList() {
+            console.log('from selectedPickList()');
+
+            var newValue = $("#picklistValues option:selected").text();
+            var picklistValue;
+            if ($("#picklistValues").attr("multiple")) {
+              picklistValue = $("#picklistValues").val().join(';');
+            }
+            else {
+              picklistValue = $("#picklistValues").val();
+            }
+            
+            console.log('picklistValue=' + picklistValue);
+
+            console.log('newValue=' + newValue);
+            $(currentCell).text(picklistValue);
+            // console.log('newValue.length=' + newValue.length);
+            // console.log('newValue[0]=' + newValue[0].text());
+
+            
+            $("#picklist").empty();
+            PopUpHide();
+            $('#buttonEditBlock').show();
+            $(currentCell).parents("tr").attr("type", "Edited");
+
+          }
+
+
+          function PopUpShow(){
+              $("#popup1").show();
+          }
+
+          function PopUpHide(){
+              $("#popup1").hide();
+          }
+
+          function TimePickerShow(){
+              $("#popup2").show();
+          }
+
+          function TimePickerHide(){
+              $("#popup2").hide();
+          }
+
         function getDataView(dateFromBase, isDateOnly) {
             var myDate = new Date(dateFromBase);
             var day = myDate.getDate();
@@ -472,7 +598,7 @@
         });
 
         $('#firstPage').click( function(action) {
-            console.log('from firstPage()');
+            console.log('from firstPage() AAAAAAAAAAAAAAAAAAAAAAAA');
             $("#currentPage").val(1);
             paginationControl(records);
         });
@@ -510,6 +636,7 @@
             console.log('SPARTAAAAAAAAAAAAAA!!!!!!!!!!!!!!');
 
 
+
             currentCell = action.target || action.srcElement;
             console.log('SPARTAAAAAAAAAAAAAA!!!!!!!!!!!!!!:currentCell=' + currentCell.innerHtml);
 
@@ -525,14 +652,14 @@
             //   // currentCell = action.target || action.srcElement;
             //   console.log('currentCell=' + currentCell.innerHTML);
             // } 
-            else if ($(currentCell).attr('type') == 'PICKLIST') {
-                if ($(currentCell).is(':has(ul.dropdown)')) {
-                      console.log('from LI');
-                      console.log('currentCell=' + currentCell.innerHTML);
-                      return;
+            else if ($(currentCell).attr('type') == 'PICKLIST' || $(currentCell).attr('type') == 'MULTIPICKLIST') {
+                // if ($(currentCell).is(':has(ul.dropdown)')) {
+                //       console.log('from LI');
+                //       console.log('currentCell=' + currentCell.innerHTML);
+                //       return;
 
 
-                }
+                // }
                 console.log('FROM PICKLIST CLOCKED');
                 oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim();
                 // $(currentCell).empty();
@@ -542,8 +669,8 @@
                 // var picklist = [];
                 // picklist.push(oldValue);
                 var picklist = ($(currentCell).attr('picklist').split(','));
-                picklist.unshift(oldValue);
-                $(currentCell).empty();
+                // picklist.unshift(oldValue);
+                // $(currentCell).empty();
 
 
                 values = {names : picklist};
@@ -551,9 +678,15 @@
                 console.log('FROM PICKLIST.values.names=' + values.names);
                 console.log('FROM PICKLIST.values.names[0]=' + values.names[0]);
                 
-                // selecValues = ['select1', 'select2', 'select3'];
-                selectView = $("#tmpPicklist").html();
-                $(currentCell).append(_.template(selectView, values));
+
+                // selectView = $("#tmpPicklist").html();
+                // $(currentCell).append(_.template(selectView, values));
+
+                // $("#picklist").show();
+                PopUpShow();
+                selectView = $("#tmpPicklistSelect").html();
+                $("#picklist").append(_.template(selectView, values));
+
                 return;
             }
 
@@ -613,6 +746,17 @@
             // }); 
 
         });
+        
+
+        // $(".timing").timingfield();
+
+
+
+        // $("#cancelSelect").click( function(action) {
+        //   console.log('from cancelSelect cliced');
+        //   PopUpHide();
+        // });
+
 
         // $(".dropdown-inside").click( function(action) {
             
@@ -624,6 +768,25 @@
 
 
     <!-- UNDERSCORE TEMPLATES -->
+    <script type="text/template" id="tmpPicklistSelect">
+      <!-- picklist -->
+      <div>
+      <% var multiPicklist = ''; %>
+      <%  if ($(currentCell).attr('type') == 'MULTIPICKLIST') { multiPicklist = "multiple"; } %>  
+      <select id="picklistValues" <%= multiPicklist %> >
+        
+        <% _.each(values.names, function(value, key) { %>
+          <option value="<%= value %>"><%= value %></option>
+         <% }); %> 
+      </select>
+      </div>
+      <div>
+        <button id="getSelect" onclick="selectedPickList();" >SELECT</button>
+        <button id="cancelSelect" onclick="cancelSelect();" >CANCEL</button>
+      </div>
+    </script>
+    
+
     <script type="text/template" id="tmpPicklist">
         <!-- <% console.log('from temp1 =' + this.innerHTML) %> -->
         <% console.log('from temp1.1 =' + values) %>
@@ -695,7 +858,7 @@
 
     <script type='text/template' id="tmpFieldNames">
         <div>
-            <select id="selectFieldNames" multiple="multiple" size="10" >   
+            <select id="selectFieldNames" multiple size="10" >   
                 <% _.each(fields, function(field, key, list) { %>
                     <option value="<%= field.name %>"><%= field.name %></option>
                 <% }); %>
@@ -741,7 +904,7 @@
                                   <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
                                    <a target="_blank" href="<%= getReference(field.fieldValue) %>"> <%= field.fieldValue %> </a>
                                    </td> 
-                            <% } else if (field.fieldType == 'PICKLIST') { %>                                
+                            <% } else if (field.fieldType == 'PICKLIST' || field.fieldType == 'MULTIPICKLIST') { %>                                
                              <!--        <ol>
                                       <li>Coffee</li>
                                       <li>Tea</li>
