@@ -1,14 +1,20 @@
 <apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="GetRecordsWithJsUCController">
     <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
-    <!-- <script type="text/javascript" src="http://documentcloud.github.com/underscore/underscore-min.js"></script> -->
     <apex:includeScript value="{!$Resource.undercore}"/>
 
     <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.min.js')}"/>
     <apex:stylesheet value="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.css')}"/>
+
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'loader_grey.css')}" />
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'picklistEditing.css')}" />
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'table.css')}" />
     <apex:stylesheet value="{!URLFOR($Resource.styles, 'main.css')}" />
+
+    <style type="text/css">
+      .cellEdited {
+          color: red;
+      }
+    </style>
 
     <div class="b-popup" id="popup1" >
         <div id="picklist" class="b-popup-content">
@@ -20,21 +26,25 @@
         <div>Set time:</div>
         <div id="hourPicker">
           H:
-          <button id="minusHour">-</button>
-          <input type="text" value="0" id="inputHour" disabled="disabled" size="2" />
-          <button id="plusHour">+</button>
+          <button id="minusHour" onmouseup="isPressed=false;changeTimeFast(-3600);" onmousedown="isPressed=true;changeTimeFast(-3600);">-</button>
+          <input type="text" value="0" id="inputHour" disabled="disabled" size="2" /> 
+          <button id="plusHour" onmouseup="isPressed=false;changeTimeFast(3600);" onmousedown="isPressed=true;changeTimeFast(3600);">+</button>
         </div>
         <div id="minutPicker">
           M:
-          <button id="minusMinut">-</button>
+          <button id="minusMinut" onmouseup="isPressed=false;changeTimeFast(-60);" onmousedown="isPressed=true;changeTimeFast(-60);">-</button>
           <input type="text" value="0" id="inputMinut" disabled="disabled" size="2" />
-          <button id="plusMinut">+</button>
+          <button id="plusMinut" onmouseup="isPressed=false;changeTimeFast(60);" onmousedown="isPressed=true;changeTimeFast(60);">+</button>
         </div>
         <div id="secPicker">
           S:
-          <button id="minusSec">-</button>
+          <!-- onclick="changeTime(-1)" -->
+          <button id="minusSec"  onmouseup="isPressed=false;changeTimeFast(-1);" onmousedown="isPressed=true;changeTimeFast(-1);" >-</button>
           <input type="text" value="0" id="inputSec" disabled="disabled" size="2" />
-          <button id="plusSec">+</button>
+          <button id="plusSec" onmouseup="isPressed=false;changeTimeFast(1);" onmousedown="isPressed=true;changeTimeFast(1);">+</button>
+        </div>
+        <div id="btnTimePicker">
+            <button id="btnTimePicker" onclick="setTime();">Set</button>
         </div>
       </div>
     </div>
@@ -42,7 +52,7 @@
   <div class="b-container">
     <div class="parent">
 
-      <!-- <input type="text" class="timing" onclick="TimePickerShow();" /> --> 
+      <!-- <input class="timepicker" type="text" onclick="TimePickerShow();" id="timepicker" />  -->
       <div id="Errors" class="block"></div>      
       
       <div id="divTableNames" class="block" ></div>
@@ -81,25 +91,24 @@
   </div>
 
     <script type="text/javascript">
-        console.log('UNDERSCORE_IS_WORKING=' + _.isEmpty({}));
-        $('#spiner').show();
-        $('#divResultTable').hide();
-        $('#buttonEditBlock').hide();
+        $("#Errors").text("");
+        $("#spiner").show();
+        $("#divResultTable").hide();
+        $("#buttonEditBlock").hide();
         PopUpHide();
         TimePickerHide();
 
         Visualforce.remoting.Manager.invokeAction(
-            '{!$RemoteAction.GetRecordsWithJsUCController.getTableNames}',            
+            "{!$RemoteAction.GetRecordsWithJsUCController.getTableNames}",            
             function(result, event) {
-                $('#spiner').hide();
-
+                $("#spiner").hide();
                 if (event.status) {
                     tables = [];
                     for (var iter = 0; iter < result.length; iter++) {  
                         tables.push({name: result[iter]}); 
                     }     
                     tableNamesView = $("#tmpTableNames").html();
-                    $('#divTableNames').append(_.template(tableNamesView, {tables: tables}));               
+                    $("#divTableNames").append(_.template(tableNamesView, {tables: tables}));               
                 } 
                 else if (event.type === 'exception') {
                     $("#Errors").text(event.message + ". Look:" + event.where);
@@ -111,28 +120,30 @@
             {escape: false}
         );
 
+/***********************************************REMOTE ACTION FUNCTIONS***********************************************/
         function getFields(tableName) { 
+            $("#Errors").text("");
             $("#divTableFields").empty();    
-            $('#spiner').show();
-            $('#divResultTable').hide();
-            $('#buttonEditBlock').hide();            
+            $("#spiner").show();
+            $("#divResultTable").hide();
+            $("#buttonEditBlock").hide();            
 
             Visualforce.remoting.Manager.invokeAction(
-                '{!$RemoteAction.GetRecordsWithJsUCController.getFields}',
+                "{!$RemoteAction.GetRecordsWithJsUCController.getFields}",
                 tableName.value,
                 function(result, event) {
                     if (event.status) {      
-                        $('#spiner').hide();                       
+                        $("#spiner").hide();                       
                         fields = [];
                         for (var iter = 0; iter < result.length; iter++) {  
                             fields.push({name: result[iter]}); 
                         }
                         if (fields.length > 0) {                        
                             tableFieldsView = $("#tmpFieldNames").html();
-                            $('#divTableFields').append(_.template(tableFieldsView, {fields: fields}));
+                            $("#divTableFields").append(_.template(tableFieldsView, {fields: fields}));
                         }
                     } 
-                    else if (event.type === 'exception') {
+                    else if (event.type === "exception") {
                         $("#Errors").text(event.message + ". Look:" + event.where);
                     } 
                     else {
@@ -144,30 +155,30 @@
         }
 
         function runQuery(field, direction) {
-            $('#spiner').show();
-            $('#divResultTable').hide();
-            $('#tableHead').empty();
-            $('#tableBody').empty();
-            $('#buttonEditBlock').hide();
+            $("#Errors").text("");
+            $("#spiner").show();
+            $("#divResultTable").hide();
+            $("#tableHead").empty();
+            $("#tableBody").empty();
+            $("#buttonEditBlock").hide();
 
             tableName = $("#selectTableNames").val();
             fieldsName = $("#selectFieldNames").val(); 
-            if (_.indexOf(fieldsName, 'Id') == -1) {
-                console.log('no Id');
-                fieldsName.unshift('Id');
+            if (_.indexOf(fieldsName, "Id") == -1) { 
+                fieldsName.unshift("Id");
             }
 
             Visualforce.remoting.Manager.invokeAction(
-                '{!$RemoteAction.GetRecordsWithJsUCController.runQuery}',
+                "{!$RemoteAction.GetRecordsWithJsUCController.runQuery}",
                 tableName,
                 fieldsName,
                 field,
                 direction,
                 function(result, event) {
                     if (event.status) {   
-                        $('#spiner').hide();
+                        $("#spiner").hide();
                         $("#currentPage").val(1);  
-                        $('#divResultTable').show();
+                        $("#divResultTable").show();
 
                         if (result.length == 0) {
                             $('#divResultTable').hide();
@@ -182,8 +193,7 @@
                                     "isSort" : true,
                                     "direction" : direction,
                                     "isEdit" : result[0].fieldsList[iter].isEdit
-                                });  
-                                console.log('SPARTA:TRUE:direction=' + direction + ';name=' + fieldsName[iter] + ';field=' + field);  
+                                });
                             }
                             else {
                                 heads.push({
@@ -195,7 +205,6 @@
                             }
                         }
 
-                        console.log('heads.length=' + heads.length);
                         resultTableHeadView = $("#tmpResultTableHead").html();
                         $('#tableHead').append(_.template(resultTableHeadView, {heads: heads}));
 
@@ -219,18 +228,19 @@
         }
 
         function editRows() {
-            console.log('from edit rows');
-            $('#spiner').show();
-            $('#buttonEditBlock').hide();
-
-            var tableForChange = [];            
+            $("#Errors").text("");
+            $("#spiner").show();
+            $("#buttonEditBlock").hide();
+            $(".cellEdited").removeClass("cellEdited");
+            
+            var tableForChange = [];
             $("#resultTableTag thead>tr,#resultTableTag tr[type='Edited']").each(function() { 
                 var arrayCurrentRow = [];
-                var elementCurrentRow = $(this).find('td, th');
+                var elementCurrentRow = $(this).find("td, th");
                 if (elementCurrentRow.length > 0) {
                     elementCurrentRow.each(function() {
-                        if( $(this).attr('edit') == 'true' || $(this).index() == 0) {
-                            cellValue = $(this).clone().children().remove().end().text().replace(/\r|\n/g, '').trim(); 
+                        if( $(this).attr("edit") == "true" || $(this).index() == 0) {
+                            cellValue = $(this).clone().children().remove().end().text().replace(/\r|\n/g, "").trim(); 
                             arrayCurrentRow.push(cellValue);                            
                         }
                     });
@@ -240,46 +250,39 @@
 
             var myJsonString = JSON.stringify(tableForChange);
             var tableName = $("#selectTableNames").val();
-            console.log('tableName=' + tableName);
 
             Visualforce.remoting.Manager.invokeAction(
-                '{!$RemoteAction.GetRecordsWithJsUCController.saveListObjects}',
+                "{!$RemoteAction.GetRecordsWithJsUCController.saveListObjects}",
                 myJsonString,
                 tableName,
                 function(result, event) {
                     if (event.status) {
-                        $('#spiner').hide();
+                        $("#spiner").hide();
+                        $("#Errors").text("Your change saved!!!");
                     }       
                     else if (event.type === 'exception') {
-                        $('#spiner').hide();
-                        $("#Errors").text(event.message + ". Look:" + event.where);
+                        $("#spiner").hide();
+                        runQuery("Id", true);
+                        $("#Errors").text("Your change did not save! Error:" + event.message + ". Look:" + event.where);
                     } 
                     else {
-                        $('#spiner').hide();
-                        $("#Errors").text(event.message);
+                        $("#spiner").hide();
+                        runQuery("Id", true);       
+                        $("#Errors").text("Your change did not save! Error:" + event.message);                                         
                     }
                 },
                 {escape: false}
             );
         }
 
-
-
 //******************************SUPPORT FUNCTIONS**********************************************************************************************
-          function changePagination(rowsCount) {
-              $("#currentPage").val('1');
-              paginationControl(records);
-          }
 
           function cancelSelect() {
-            console.log('from cancelSelect cliced');
             $("#picklist").empty();
             PopUpHide();
           }
 
           function selectedPickList() {
-            console.log('from selectedPickList()');
-
             var newValue = $("#picklistValues option:selected").text();
             var picklistValue;
             if ($("#picklistValues").attr("multiple")) {
@@ -287,17 +290,17 @@
             }
             else {
               picklistValue = $("#picklistValues").val();
-            }
-            
-            console.log('picklistValue=' + picklistValue);
+            }            
 
-            console.log('newValue=' + newValue);
             $(currentCell).text(picklistValue);           
             $("#picklist").empty();
             PopUpHide();
+            if (picklistValue == oldValue) {
+              return;
+            }
             $('#buttonEditBlock').show();
             $(currentCell).parents("tr").attr("type", "Edited");
-
+            $(currentCell).addClass("cellEdited");
           }
 
           function PopUpShow(){
@@ -314,6 +317,76 @@
 
           function TimePickerHide(){
               $("#popup2").hide();
+          }
+
+          function setTime() {   
+            var hours = $("#inputHour").val();
+            hours = (hours < 10) ? "0" + hours : hours;
+
+            var minuts = $("#inputMinut").val();
+            minuts = (minuts < 10) ? "0" + minuts : minuts;
+
+            var seconds = $("#inputSec").val();
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+            timepickerValue = $(currentCell).text() +  " " + hours + ":" + minuts + ":" + seconds;
+            $(currentCell).text(timepickerValue);
+
+            TimePickerHide();
+          }
+
+          function changeTime(value) {
+            var allSec = parseInt(getAllSeconds());
+            allSec += parseInt(value);
+
+            if (allSec < 0) {
+                allSec = allSec + 24 * 60 * 60;
+            } 
+            else if (allSec >= 86400) {
+                allSec = allSec - 24 * 60 * 60;
+            }
+
+            var seconds = allSec % 60;
+            var hours = Math.floor(allSec / 3600);
+            var minuts = Math.floor((allSec - seconds - hours * 3600) / 60);
+
+            $("#inputSec").val(seconds);
+            $("#inputHour").val(hours);
+            $("#inputMinut").val(minuts);
+          }
+
+          var isPressed = false;
+          var count = 0;
+          function changeTimeFast(value) {
+            if (count < 3) {
+                speed = 400;
+            } 
+            else if (count < 9) {
+                speed = 250;
+            }
+            else if (count < 15) {
+                speed = 100;
+            }
+            else if (count < 22) {
+                speed = 50;
+            }
+
+            if (isPressed) {
+                count++;
+                changeTime(value);
+                setTimeout('changeTimeFast(' + value + ')', speed);
+            }
+            else {
+                count = 0;
+            }
+          }
+
+          function getAllSeconds() {
+            var hours = parseInt($("#inputHour").val());
+            var minuts = parseInt($("#inputMinut").val());
+            var seconds = parseInt($("#inputSec").val());
+            var allSec = seconds + minuts * 60 + hours * 60 * 60;
+            return allSec;
           }
 
         function getDataView(dateFromBase, isDateOnly) {
@@ -346,24 +419,25 @@
         }
 
         function getReference(ref) {
-            return 'https://ap2.salesforce.com/' + ref;
+            return "{!baseURL}" + "/" + ref;
         }
 
         function openDatepicker(action) {
-            console.log('from openDatepicker()');
-            console.log('action=' + action.val);
             var oldValue = $(action).val();
 
             $(action).datepicker({
                 dateFormat: "yy-mm-dd",
                 onSelect: function(dateText, inst) {
                     $("#buttonEditBlock").show();
-                    console.log('onSelect datepicker');
                     var val = $(this).val();
-                    console.log('onSelect val=' + val);
 
                     $(this).parents("tr").attr("type", "Edited");
+                    $(this).parents("td").addClass("cellEdited");
                     $(this).parent().empty().html(val);
+
+                    if ($(currentCell).attr("type") == "DATETIME") {
+                      TimePickerShow();                 
+                    }
                 },
                 onClose: function(selectedDate) {
                     $(this).parent().empty().html(oldValue);
@@ -371,184 +445,161 @@
             }).focus();
         }
 
+        function changePagination(rowsCount) {
+            $("#currentPage").val("1");
+            paginationControl(records);
+        }
+
         function paginationControl(records) {
-            $('#tableBody').empty();
+            $("#buttonEditBlock").hide();
+            $("#tableBody").empty();
 
             rowsPageCount = $("#rowsOnPage").val();
-            console.log('from pagination');
-            console.log('rowsPageCount=' + rowsPageCount);
-            console.log('records.length=' + records.length);
             recordsCount = records.length;
             pagesCount = Math.ceil(records.length/rowsPageCount);
-            $('#pagesCount').empty().text(pagesCount);
-            console.log('pagesCount=' + pagesCount);
-
+            $("#pagesCount").empty().text(pagesCount);
             currentPage = $("#currentPage").val();
-            console.log('currentPage=' + currentPage);
 
             startRecord = (currentPage - 1) * rowsPageCount;
             finishRecord = currentPage * rowsPageCount - 1;
             if (finishRecord >= recordsCount) {
                 finishRecord = recordsCount - 1;
-            }
-            console.log(startRecord + ' FROM ' + finishRecord);
+            } 
 
             recordsView = [];
             for (var i = startRecord; i <= finishRecord; i++) {
                 recordsView.push(records[i]);
             }
-            console.log('recordsView=' + recordsView);
 
             resultTableBodyView = $("#tmpResultTableBody").html();
-            $('#tableBody').append(_.template(resultTableBodyView, {recordsView: recordsView}));
+            $("#tableBody").append(_.template(resultTableBodyView, {recordsView: recordsView}));
 
             if (currentPage == 1 && pagesCount == 1) { 
-                $('#firstPage').attr('disabled',true);
-                $('#prevPage').attr('disabled',true);                
-                $('#nextPage').attr('disabled',true);  
-                $('#lastPage').attr('disabled',true);  
+                $("#firstPage").attr("disabled",true);
+                $("#prevPage").attr("disabled",true);                
+                $("#nextPage").attr("disabled",true);  
+                $("#lastPage").attr("disabled",true);  
             } 
             else if (currentPage == 1) {
-                $('#firstPage').attr('disabled',true);
-                $('#prevPage').attr('disabled',true);                
-                $('#nextPage').removeAttr('disabled');
-                $('#lastPage').removeAttr('disabled');
+                $("#firstPage").attr("disabled",true);
+                $("#prevPage").attr("disabled",true);                
+                $("#nextPage").removeAttr("disabled");
+                $("#lastPage").removeAttr("disabled");
             }
             else if (currentPage == pagesCount) {
-                $('#firstPage').removeAttr('disabled');
-                $('#prevPage').removeAttr('disabled');              
-                $('#nextPage').attr('disabled',true);  
-                $('#lastPage').attr('disabled',true);  
+                $("#firstPage").removeAttr("disabled");
+                $("#prevPage").removeAttr("disabled");              
+                $("#nextPage").attr("disabled",true);  
+                $("#lastPage").attr("disabled",true);  
             }
             else {
-                $('#firstPage').removeAttr('disabled');
-                $('#prevPage').removeAttr('disabled');              
-                $('#nextPage').removeAttr('disabled'); 
-                $('#lastPage').removeAttr('disabled');                 
+                $("#firstPage").removeAttr("disabled");
+                $("#prevPage").removeAttr("disabled");              
+                $("#nextPage").removeAttr("disabled"); 
+                $("#lastPage").removeAttr("disabled");                 
             }       
         }
 
 //****************************************************ACTION FUNCTIONS***************************************************************
-        $('#nextPage').click( function(action) {
-            console.log('from nexrPage()');
+        $("#nextPage").click( function(action) {
             var currentPage =  parseInt($("#currentPage").val());
             $("#currentPage").val(currentPage + 1);
             paginationControl(records);
 
         });
 
-        $('#prevPage').click( function(action) {
-            console.log('from prevPage()');
+        $("#prevPage").click( function(action) {
             var currentPage =  parseInt($("#currentPage").val());
             $("#currentPage").val(currentPage - 1);
             paginationControl(records);
 
         });
 
-        $('#firstPage').click( function(action) {
-            console.log('from firstPage() AAAAAAAAAAAAAAAAAAAAAAAA');
+        $("#firstPage").click( function(action) {
             $("#currentPage").val(1);
             paginationControl(records);
         });
 
-        $('#lastPage').click( function(action) {
-            console.log('from lastPage()');
+        $("#lastPage").click( function(action) {
             var lastPage = $("#pagesCount").text();
             $("#currentPage").val(lastPage);
             paginationControl(records);
         });
 
-        // var direction;
         $("#tableHead").click( function(currentRow) {
-            console.log('from tableHead()');
             var activeField = currentRow.target || currentRow.srcElement;
-            if (activeField.tagName != 'TH') {
+            if (activeField.tagName != "TH") {
                 return;
-                // activeField = activeField.
             }                    
 
-            if ($(activeField).attr('direction') == 'asc') {
+            if ($(activeField).attr("direction") == "asc") {
                 direction = false;
             } 
             else {
                 direction = true;
             }
-            console.log('direction=' + direction);
 
             $(activeField).find( "span").remove();
             runQuery(activeField.textContent.trim(), direction);
         });
 
         $("#tableBody").click( function(action) {
-            console.log('from tableBody click');
-            console.log('SPARTAAAAAAAAAAAAAA!!!!!!!!!!!!!!');
+            $("#Errors").text("");
             currentCell = action.target || action.srcElement;
-
-            if ($(currentCell).attr('edit') == 'false') {
+            if ($(currentCell).attr("edit") == "false") {
                 return;
             }
-            console.log('currentCell=' + currentCell.textContent.replace(/\r|\n/g, '').trim());
-            if(currentCell.tagName == 'INPUT') {
+            else if(currentCell.tagName == "INPUT" || currentCell.tagName == "A") {
                 return;
             }
-
-            else if ($(currentCell).attr('type') == 'PICKLIST' || $(currentCell).attr('type') == 'MULTIPICKLIST') {
-    
-                oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim();
- 
-                var picklist = ($(currentCell).attr('picklist').split(','));
-        
-
-
+            else if($(currentCell).attr("type") == "REFERENCE") {
+                return;
+            }
+            else if ($(currentCell).attr("type") == "PICKLIST" || $(currentCell).attr("type") == "MULTIPICKLIST") {    
+                oldValue = currentCell.textContent.replace(/\r|\n/g, "").trim(); 
+                var picklist = ($(currentCell).attr("picklist").split(",")); 
                 values = {names : picklist};
-
                 PopUpShow();
                 selectView = $("#tmpPicklistSelect").html();
                 $("#picklist").append(_.template(selectView, values));
-
+                return;
+            }
+            else if (typeof $(currentCell).attr("type") == "undefined") {
                 return;
             }
 
-            // oldValue = currentCell.textContent;
             oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim();
-
-            console.log('oldValue=' + oldValue); 
-            console.log('edit=' + $(currentCell).attr('edit'));
 
             $(currentCell).empty();
             object = {
                 value: oldValue,
-                dataType: $(currentCell).attr('type'),
-                edit: $(currentCell).attr('edit')
-
+                dataType: $(currentCell).attr("type"),
+                edit: $(currentCell).attr("edit")
             };           
-            console.log('object.oldValue=' + object); 
 
             inputView = $("#tmpInput").html();
             $(currentCell).append(_.template(inputView, {object: object}));
 
-            var inputElement = $('#edit');
-            
-
-            if ($(currentCell).attr('type') == 'DATE') {
+            var inputElement = $("#edit");
+            if ($(currentCell).attr("type") == "DATE" || $(currentCell).attr("type") == "DATETIME" ) {
                 openDatepicker(inputElement);
-            } 
-            else if ($(currentCell).attr('type') == 'PICKLIST') {
-
-            }   
+            }  
             else {
                 $(inputElement).focus();
                 $(inputElement).blur(function() {                
                     var val = $(this).val();
+                    if (val == oldValue) {
+                      $(this).parent().empty().html(val);
+                      return;                      
+                    }
                     $(this).parents("tr").attr("type", "Edited");
+                    $(this).parents("td").addClass("cellEdited");
+
                     $(this).parent().empty().html(val);
                     $("#buttonEditBlock").show();
                 });
-            }      
-
-
-        });
-        
+            }
+        });        
 
         $(window).keydown(function(event) {      
             //pressed enter      
@@ -559,7 +610,9 @@
             }
 
             //pressed Esc
-            if(event.keyCode == 27) {   
+            if(event.keyCode == 27) {  
+                $("#picklist").empty();
+                PopUpHide();                
                 $('#edit').parent().empty().html(oldValue);
                 $('#edit').blur();
             }
@@ -572,12 +625,10 @@
 
 <!--******************************************************** UNDERSCORE TEMPLATES ***********************************************************-->
     <script type="text/template" id="tmpPicklistSelect">
-      <!-- picklist -->
       <div>
       <% var multiPicklist = ''; %>
       <%  if ($(currentCell).attr('type') == 'MULTIPICKLIST') { multiPicklist = "multiple"; } %>  
-      <select id="picklistValues" <%= multiPicklist %> >
-        
+      <select id="picklistValues" <%= multiPicklist %> >        
         <% _.each(values.names, function(value, key) { %>
           <option value="<%= value %>"><%= value %></option>
          <% }); %> 
@@ -587,36 +638,7 @@
         <button id="getSelect" onclick="selectedPickList();" >SELECT</button>
         <button id="cancelSelect" onclick="cancelSelect();" >CANCEL</button>
       </div>
-    </script>
-    
-
-    <script type="text/template" id="tmpPicklist">
-        <!-- <% console.log('from temp1 =' + this.innerHTML) %> -->
-        <% console.log('from temp1.1 =' + values) %>
-        <% console.log('from temp1.1.names =' + values.names) %>
-<!--         <% var oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim(); %>
-        <%   $(currentCell).empty(); %> -->
-        <!-- <select id="picklistSelect" onchange="changePicklist(this)"> -->
-        
-        
-            
-            <ul class="dropdown">
-                <li class="dropdown-top">
-                    <% var oldValue = values.names[0]; %>
-                    <%  if (oldValue == '') { oldValue = values.names[1]; } %>   
-                    <span class="dropdown-top" ><%= oldValue %></span>
-                    <ul class="dropdown-inside">
-                        <% _.each(values.names, function(value, key) { %>
-                            <%  if (key != 0) { %>
-                              <li><span ><%= value %></span></li>
-                            <% } %>
-                        <% }); %> 
-                    </ul>
-                </li>
-            </ul>            
-    </script>
-
-    
+    </script>    
 
     <script type="text/template" id="tmpInput">
         <%  disabled = "disabled"; %>
@@ -624,7 +646,7 @@
         <input id="edit" type="text" value="<%= object.value %>" <%= disabled %> />
     </script>
 
-    <script type='text/template' id="tmpTableNames">
+    <script type="text/template" id="tmpTableNames">
         <select id="selectTableNames" onchange="getFields(this)">   
             <% _.each(tables, function(table, key, list) { %>
                 <option value="<%= table.name %>"><%= table.name %></option>
@@ -632,7 +654,7 @@
         </select>
     </script>
 
-    <script type='text/template' id="tmpFieldNames">
+    <script type="text/template" id="tmpFieldNames">
         <div>
             <select id="selectFieldNames" multiple size="10" >   
                 <% _.each(fields, function(field, key, list) { %>
@@ -646,62 +668,44 @@
     </script>
 
     <script type="text/tmplate" id="tmpResultTableHead">
-            <!-- <thead id="tableHead"> -->
-                <tr>
-                    <% _.each(heads, function(head, key, list) { %>
-                        <%  sortClass = ""; direction = ''  %>
-                        <%  if (head.isSort) { if(head.direction) { direction = '&#9650;'; sortClass = "asc";  } else {direction = '&#9660;';sortClass = "desc";} } %>
-                        <th class="text-left" edit="<%= head.isEdit %>" direction="<%= sortClass  %>"><%= head.name %><span><%= direction %></span> </th>
-                        <!-- <th><%= head.name + '&#9650;' %></th> -->
-                    <% }); %>
-                </tr>
-         <!--    </thead>    -->  
+        <tr>
+            <% _.each(heads, function(head, key, list) { %>
+                <%  sortClass = ""; direction = ''  %>
+                <%  if (head.isSort) { if(head.direction) { direction = '&#9650;'; sortClass = "asc";  } else {direction = '&#9660;';sortClass = "desc";} } %>
+                <th class="text-left" edit="<%= head.isEdit %>" direction="<%= sortClass  %>"><%= head.name %><span><%= direction %></span> </th>
+              
+            <% }); %>
+        </tr>
     </script>
 
     <script type="text/tmplate" id="tmpResultTableBody">
-            <!-- <tbody> -->
-                <% _.each(recordsView, function(record, key, list) { %>
-                    <tr> 
-                        <% _.each(record.object.fieldsList, function(field, key, list) { %>
-                            <!-- <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" >  -->
-                            <% if (field.fieldType == 'DATE' && !!field.fieldValue) { %>
-                                    <!-- console.log('from body template date=' + field.fieldValue); -->
-                                    <!-- field.fieldValue = '2016-12-24'; -->
-                                    <!-- field.fieldValue = getDataView(field.fieldValue, true); -->
-                                    <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
-                                    <%= getDataView(field.fieldValue, true) %>
-                                    </td> 
-                            <% } else if (field.fieldType == 'DATETIME' && !!field.fieldValue) { %>
-                                    <!-- field.fieldValue = getDataView(field.fieldValue, false); -->
-                                    <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
-                                    <%= getDataView(field.fieldValue, false) %>
-                                    </td> 
-                            <% } else if (field.fieldType == 'REFERENCE' && !!field.fieldValue) { %>
-                                  <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
-                                   <a target="_blank" href="<%= getReference(field.fieldValue) %>"> <%= field.fieldValue %> </a>
-                                   </td> 
-                            <% } else if (field.fieldType == 'PICKLIST' || field.fieldType == 'MULTIPICKLIST') { %>                                
-
-                                    <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" picklist="<%= field.picklistValues %>"> 
-                                        <%= field.fieldValue %>  
-
-
-                                    </td> 
-       
-
-                            <% } else { %>
-                                <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
-                                <%= field.fieldValue %>
-                                </td> 
-
-
-
-                            <% } %>                             
-                            <!-- </td>  -->
-                        <% }); %>
-                        <!-- <td><%= record.object.fieldsList[0].fieldValue %></td>                     -->
-                    </tr>
+        <% _.each(recordsView, function(record, key, list) { %>
+            <tr> 
+                <% _.each(record.object.fieldsList, function(field, key, list) { %>
+                    <% if (field.fieldType == 'DATE' && !!field.fieldValue) { %>
+                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
+                            <%= getDataView(field.fieldValue, true) %>
+                        </td> 
+                    <% } else if (field.fieldType == 'DATETIME' && !!field.fieldValue) { %>
+                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
+                            <%= getDataView(field.fieldValue, false) %>
+                        </td> 
+                    <% } else if (field.fieldType == 'REFERENCE' && !!field.fieldValue) { %>
+                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
+                            <a target="_blank" href="<%= getReference(field.fieldValue) %>"> <%= field.fieldValue %> </a>
+                        </td> 
+                    <% } else if (field.fieldType == 'PICKLIST' || field.fieldType == 'MULTIPICKLIST') { %>
+                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" picklist="<%= field.picklistValues %>"> 
+                            <%= field.fieldValue %>
+                        </td> 
+                    <% } else { %>
+                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
+                            <%= field.fieldValue %>
+                        </td> 
+                    <% } %>
                 <% }); %>
-            <!-- </tbody>      -->
+            </tr>
+        <% }); %>
     </script>
+
 </apex:page>

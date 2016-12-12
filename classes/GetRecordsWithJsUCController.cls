@@ -1,5 +1,10 @@
 public with sharing class GetRecordsWithJsUCController {
 
+    public String baseURL { get; set; }
+
+    public GetRecordsWithJsUCController() {
+        baseURL = URL.getSalesforceBaseUrl().toExternalForm();
+    }
     private static final String TABLE_NAME_NONE = '--NONE--';
     
     @RemoteAction
@@ -126,11 +131,9 @@ public with sharing class GetRecordsWithJsUCController {
                     resultValue = Decimal.valueOf(value);
                 }
                 else if (fieldType == 'DATE') {
-                    System.debug('getAdduceValue():value=' + value);
                     resultValue = Date.valueOf(value);
                 }
                 else if (fieldType == 'DATETIME') {
-                    System.debug('getAdduceValue():value=' + value);
                     resultValue = Date.valueOf(value);
                 }
                 else if (fieldType == 'INTEGER') {
