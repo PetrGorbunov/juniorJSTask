@@ -28,21 +28,21 @@
         /*width: 100%;*/
         /*height:100%;*/
         background: #f0c60a;
-        overflow-x: hidden;
-        overflow-y: auto;
+/*        overflow-x: hidden;
+        overflow-y: auto;*/
     }
 
     .content{
-    /*right: 40px;*/
-    /*left: 280px;*/
-    top: 0px;
-    position: absolute;
-    /*position: all;*/
-    /*padding-bottom: 30px;*/
-    text-align: center; /**/
-    width: 100%;
-    height: 100%;
-    margin: 0 auto; 
+        /*right: 40px;*/
+        /*left: 280px;*/
+        top: 0px;
+        position: absolute;
+        /*position: all;*/
+        /*padding-bottom: 30px;*/
+        text-align: center; /**/
+        width: 100%;
+        height: 100%;
+        margin: 0 auto; 
     }
 
     .content h2{
@@ -96,14 +96,15 @@
 
     /* popup menu */
     .b-popup{
-        width:99%;
+        /*width:99%;*/
+        width: 100% !important;
         /*min-height:100%;*/
         height: 100%;
         background-color: rgba(0,0,0,0.5);
         overflow:hidden;
         position:fixed;
         top:0px;
-         
+        left: 0px;
         z-index: 3;
     }
 
@@ -125,14 +126,67 @@
         /*margin: -20% 0 0 -10%;*/
     }
 
+    /* popup menu for picklist and multipicklist */
+    #popupPicklist {
+        width:99%;
+        /*min-height:100%;*/
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        overflow:hidden;
+        position:fixed;
+        top:0px;         
+        z-index: 3;
+    }
+
+    #picklistSelect {
+        /*margin:40px auto 0px auto;*/
+        /*margin: auto;*/
+        width:40%;
+        height: 60%;
+        padding:10px;
+        /*background-color: #c5c5c5;*/
+        /*border-radius:5px;*/
+        /*box-shadow: 0px 0px 10px #000;*/
+        text-align: center;
+        position:absolute;
+        left:40%;
+        top:30%;
+        margin-top: -10%;
+        margin-left: -10%;
+        /*margin: -20% 0 0 -10%;*/
+    }
+
+    #picklistCurrentValue,
+    #picklistFreeValue {
+        font-size: 26px;
+        width: auto;
+    }
+
+    #multipicklistMenu {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        font-size: 26px;
+    }
+
+    #multipicklistMenu div {
+        margin: 3px;
+    }
+
+
+
     .b-container {
         width:100%;
         height:100%;
         
         margin:0px auto;
         padding:10px;
+        /*padding:10px;*/
+
         font-size:30px;
         color: #fff;
+        display: block;
     }
 
     div.block {
@@ -141,13 +195,136 @@
         margin: 10px auto;
         padding: 10px;
         text-align: center;
-        width: 40%;
+        width: 8 0%;
+    }
+
+    .allMenu {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .newMenuButton a {
+        color:#dfedf3;
+        text-decoration: none;
+    }
+
+    .newMenuButton {
+        /*[ Position ]*/
+        margin:0px;
+        float:left;
+        left: 10px;
+        right: 50px;
+        top:20px;
+        /* [ Botton ] */
+        position:relative;
+        height:50px;
+        width:50px;
+        cursor:pointer;
+        line-height:47px;
+        background-color:#1c5d79;
+        text-align:center;
+        font-size:30px;
+        display:inline-block;
+        text-shadow:0px -1px 1px rgba(255,255,255,0.5);
+        color:#dfedf3;
+        /* Transitions */
+        -moz-transition:.1s ease-out;
+        -webkit-transition:.1s ease-out;
+        -o-transition:.1s ease-out;
+        -ms-transition:.1s ease-out;
+        -khtml-transition:.1s ease-out;
+        transition:.1s ease-out;
+        /* Shadows */
+        box-shadow:inset 0 0 5px 0 rgba(255,255,255,0.5);
+        -moz-box-shadow:inset 0 0 5px 0 rgba(255,255,255,0.5);
+        -ms-box-shadow:inset 0 0 5px 0 rgba(255,255,255,0.5);
+        -webkit-box-shadow:inset 0 0 5px 0 rgba(255,255,255,0.5);
+        -khtml-box-shadow:inset 0 0 5px 0 rgba(255,255,255,0.5);
+        -o-box-shadow:inset 0 0 5px 0 rgba(255,255,255,0.5);
+        /* Borders */
+        border-width:1px;
+        border-style:solid;
+        border-left-color:#777;
+        border-right-color:#777;
+        border-top-color:#999;
+        border-bottom:4px solid #555;
+        /* {{ No selectable }} */
+        user-select:none;
+        -moz-user-select:none;
+        -webkit-user-select:none;
+        -o-user-select:none;
+        -ms-user-select:none;
+        -khtml-user-select:none;
+        /*[{- Border radius -}]*/
+        border-radius:50px;
+        -moz-border-radius:50px;
+        -webkit-border-radius:50px;
+        -ms-border-radius:50px;
+        -khtml-border-radius:50px;
+        -o-border-radius:50px;
+        /* Gradient */
+        background-image:-moz-linear-gradient(top,transparent,rgba(0,0,0,0.2));
+        background-image:-webkit-linear-gradient(top,transparent,rgba(0,0,0,0.2));
+        background-image:-o-linear-gradient(top,transparent,rgba(0,0,0,0.2));
+        background-image:-khtml-linear-gradient(top,transparent,rgba(0,0,0,0.2));
+        background-image:-ms-linear-gradient(top,transparent,rgba(0,0,0,0.2));
+        background-image:linear-gradient(top,transparent,rgba(0,0,0,0.2));
+    }
+
+    .newMenuButton:hover
+    {
+        /*color:white;*/
+        /*{Gradient}*/
+        background-image:-moz-linear-gradient(top,transparent,rgba(0,0,0,0.17));
+        background-image:-webkit-linear-gradient(top,transparent,rgba(0,0,0,0.17));
+        background-image:-o-linear-gradient(top,transparent,rgba(0,0,0,0.17));
+    }
+    .newMenuButton:hover a {
+        color:white;
+    }
+    .newMenuButton:active{
+        margin-top:4px;
+        color:#777;
+        border:1px solid #999;
+        /*{Shadow}*/
+        box-shadow:inset 0 0 5px 0 #333;
+        -moz-box-shadow:inset 0 0 5px 0 #333;
+        -webkit-box-shadow:inset 0 1px 2px 0 #333, 0 1px 1px 0 #fff;
     }
 
     #divTableNames {
         margin-bottom: 0px;
         margin-top: 30px;
     }
+
+    .picklistMenu {
+        width: 90%;
+        height: 90%;
+        margin: 0px auto;
+        text-align: center;
+        background: #1c5d79;
+        display: flex;
+        /*align-items: center;*/
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+    }
+
+    .picklistMenuSelect {
+        margin: 5px;
+    }
+
+    .picklistMenuButton {
+        margin: 5px;
+    }
+
+    .picklistMenuButton button {
+        background: #dfedf3;   
+        font-size: 26px; 
+    }
+    
 
 
 
@@ -179,7 +356,7 @@
     }
 
     #pagination {
-        width: 15%;
+        width: 60%;
         font-size:13px
     }
 
@@ -197,7 +374,7 @@
         /*color: white;
         margin-top: 50px;
         font-size: 36px;*/
-        width: 15%;
+        width: 60%;
         font-size:19px;
         margin: auto;
         background: #1c5d79;
@@ -208,7 +385,7 @@
     }
 
     .footerMenuTableDiv {
-        width: 15%;
+        width: 60%;
         font-size:19px;
         margin: auto;
         background: #1c5d79;
@@ -234,6 +411,26 @@
     .button:hover {
         background-color: white; 
 
+    }
+
+    .button-edit {
+        background-color: #dfedf3; 
+        border: none;
+        color: black;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .button-edit:hover {
+        background-color: white; 
+
+    }
+
+    #buttonEditBlock {
+        width: 60%;
     }
 
 
@@ -504,15 +701,19 @@
 
     </style>
 <body>
+    <div id = "dialog-message">
+        
+    </div>
+
     <div class="b-popup" id="popup1" >
         <div id="picklist" class="b-popup-content">
           
         </div>
     </div>
 
-    <div id="dialog-message" title="Download complete">
-        <p>Hello world dialog</p>
-    </div>
+<!--     <div id="dialog-message" title="Download complete">
+        
+    </div> -->
 
     <div class="b-popup" id="popup2" >
       <div id="timepicker" class="b-popup-content">
@@ -591,17 +792,31 @@
         </div>
     </div>
 
+    <div id="popupPicklist" >
+        <div id="picklistSelect" >
+            
+        </div>
+    </div>
+
     <div class="b-container"> 
         <div id="menuSelect" class="content">
             <!-- <div class="headerMenuSelectDiv">Select menu</div> -->
     <!--         <div>Select table:</div>
             <div>Select fields:</div> -->
-
-            <div id="divTableNames" class="block" ></div>
-            <div id="divTableFields" ></div>
+            <div class="allMenu">
+                <div>
+                    <div id="divTableNames" class="block" ></div>
+                    <!-- <div> -->
+                    <div id="divTableFields" ></div>
+                </div>
+                <div id="goToRightButton" class="newMenuButton">
+                    <a id="linkToMenuTable" href="#menuTable" >&rarr;</a>
+                </div>
+            </div>
+            <!-- </div> -->
             
-
             <a id="linkToMenuTable" href="#menuTable" style="display: none">Contact</a>
+            
             <!-- ... -->
         </div>
         <!-- /Home -->
@@ -610,38 +825,49 @@
         <!-- Contact -->
         <div id="menuTable" class="panel">
             <div class="content">
-                <div class="headerMenuTableDiv">Table menu</div>
-
-                <div id="divResultTable">
-                    <div id="forTable">                    
-                        <table id="resultTableTag" class="table-fill" border="1">
-                            <thead id="tableHead"></thead>
-                            <tbody id="tableBody" class="table-hover"></tbody>            
-                        </table>    
+                <div class="allMenu">
+                    <div id="goToLeftButton" class="newMenuButton">
+                        <a id="linkToMenuSelect" href="#menuSelect" >&larr;</a>
                     </div>
-                    <div id="pagination" class="block">
-                        <select id="rowsOnPage" onchange="changePagination(this)">
-                            <option value="5" >5</option>
-                            <option value="10" >10</option>
-                            <!-- <option value="18" >18</option> -->
-                            <option value="25" >25</option>
-                            <option value="50" selected="selected" >50</option>
-                        </select>
 
-                        <button id="firstPage">&lt;&lt;</button>
-                        <button id="prevPage">&lt;</button>
-                        <input disabled="disabled" id="currentPage" type="text" value="1" size="3" />
-                        <span id="pagesCount"></span>
-                        <button id="nextPage">&gt;</button>
-                        <button id="lastPage">&gt;&gt;</button>
+                    <div>
+                        <div class="headerMenuTableDiv" id="headerMenuTableDiv">Menu for table selectTableNames headerMenuTableDiv</div>
+
+                        <div id="divResultTable">
+                            <div id="forTable">                    
+                                <table id="resultTableTag" class="table-fill" border="1">
+                                    <thead id="tableHead"></thead>
+                                    <tbody id="tableBody" class="table-hover"></tbody>            
+                                </table>    
+                            </div>
+                            <div id="pagination" class="block">
+                                <select id="rowsOnPage" onchange="changePagination(this)">
+                                    <option value="5" >5</option>
+                                    <option value="10" >10</option>
+                                    <!-- <option value="18" >18</option> -->
+                                    <option value="25" >25</option>
+                                    <option value="50" selected="selected" >50</option>
+                                </select>
+
+                                <button id="firstPage">&lt;&lt;</button>
+                                <button id="prevPage">&lt;</button>
+                                <input disabled="disabled" id="currentPage" type="text" value="1" size="3" />
+                                <span id="pagesCount"></span>
+                                <button id="nextPage">&gt;</button>
+                                <button id="lastPage">&gt;&gt;</button>
+                            </div>
+                        </div>
+
+                        <div id="buttonEditBlock" class="block">
+                            <button onclick="editRows()" id="buttonEdit" class="button-edit" >Save All</button>
+                        </div>
+                        <div class="footerMenuTableDiv" style="display: none;">
+                            <a id="linkToMenuSelect" href="#menuSelect"  >&larr; Go to Select menu</a>
+                        </div>
                     </div>
-                </div>
 
-                <div id="buttonEditBlock" class="block">
-                    <button onclick="editRows()" id="buttonEdit" >Change</button>
-                </div>
-                <div class="footerMenuTableDiv" >
-                    <a id="linkToMenuSelect" href="#menuSelect"  >&larr; Go to Select menu</a>
+
+
                 </div>
             <!-- .onclick="runQuery('Id', true);".. -->
             </div>
@@ -651,13 +877,28 @@
 
 </body>
     <script type="text/javascript">
+        $("#dialog-message").dialog({ 
+            show: 'slide',
+            hide: 'slide',
+            buttons: {
+                "OK": function() {
+                    $(this).dialog("close");
+                }
+            },
+            close: function() { runQuery("Id", true) },
+            autoOpen: false,            
+            modal: true           
+        });
+
         $("#Errors").text("");
         $("#spiner").show();
         /**/ spinerShow();
+        $("#goToRightButton").hide();
         $("#divResultTable").hide();
         $("#buttonEditBlock").hide();
         PopUpHide();
         TimePickerHide();
+        $("#popupPicklist").hide();
 
         Visualforce.remoting.Manager.invokeAction(
             "{!$RemoteAction.GetRecordsWithJsUCController.getTableNames}",            
@@ -695,6 +936,29 @@
 
             $("#divResultTable").hide();
             $("#buttonEditBlock").hide();  
+
+            // GetRecordsWithJsUCController.getFields(tableName.value, function(result, event) {
+            //     if (event.status) {      
+            //         $("#spiner").hide(); 
+            //         /**/ spinerHide();                      
+            //         fields = [];
+            //         for (var iter = 0; iter < result.length; iter++) {  
+            //             fields.push({name: result[iter]}); 
+            //         }
+            //         if (fields.length > 0) {                        
+            //             tableFieldsView = $("#tmpFieldNames").html();
+            //             $("#divTableFields").append(_.template(tableFieldsView, {fields: fields}));
+            //         }
+            //         $("#divTableFields").css({"height":"100%"});
+            //     } 
+            //     else if (event.type === "exception") {
+            //         $("#Errors").text(event.message + ". Look:" + event.where);
+            //     } 
+            //     else {
+            //         $("#Errors").text(event.message);
+            //     }},
+            //     {escape: false}
+            // );
 
             Visualforce.remoting.Manager.invokeAction(
                 "{!$RemoteAction.GetRecordsWithJsUCController.getFields}",
@@ -757,6 +1021,10 @@
                         /**/ spinerHide();
                         $("#currentPage").val(1);  
                         $("#divResultTable").show();
+                        $("#goToRightButton").show();
+                        
+                        $("#headerMenuTableDiv").empty().text("Menu for table " + "'" + tableName + "'");
+                        // selectTableNames headerMenuTableDiv
 
                         if (result.length == 0) {
                             $('#divResultTable').hide();
@@ -822,7 +1090,8 @@
 
         function editRows() {
             $("#Errors").text("");
-            $("#spiner").show();
+            // $("#spiner").show();
+            spinerShow();
             $("#buttonEditBlock").hide();
             $(".cellEdited").removeClass("cellEdited");
             
@@ -833,7 +1102,17 @@
                 if (elementCurrentRow.length > 0) {
                     elementCurrentRow.each(function() {
                         if( $(this).attr("edit") == "true" || $(this).index() == 0) {
-                            cellValue = $(this).clone().children().remove().end().text().replace(/\r|\n/g, "").trim(); 
+                            console.log("this.tagName=" + this.tagName);
+                            if (this.tagName == 'TH' ) {
+                                // console.log("elementCurrentRow911=" + elementCurrentRow);
+                                cellValue = $(this).clone().children().remove().end().text().replace(/\r|\n/g, "").trim(); 
+                                console.log("cellValue911=" + cellValue);
+
+                            } 
+                            else {                           
+                                cellValue = $(this).children("span.newValue").text().replace(/\r|\n/g, "").trim();
+                            }
+                            console.log("cellValue=" + cellValue);
                             arrayCurrentRow.push(cellValue);                            
                         }
                     });
@@ -850,18 +1129,43 @@
                 tableName,
                 function(result, event) {
                     if (event.status) {
-                        $("#spiner").hide();
+                        // $("#spiner").hide();
+                        spinerHide();
                         $("#Errors").text("Your change saved!!!");
+                        console.log("Your change saved!!!");
+                        $("#dialog-message").empty().text("Your change was saved. Table will reload.");
+                        // $("#dialog-message").text("Your change was saved. Table will reload.");
+                        $("#dialog-message").dialog({ 
+                            title: "Message"                                 
+                        });   
+                        $("#dialog-message").dialog("open"); 
+                        // runQuery("Id", true);                    
                     }       
                     else if (event.type === 'exception') {
-                        $("#spiner").hide();
-                        runQuery("Id", true);
+                        // $("#spiner").hide();
+                        spinerHide();
+                        
                         $("#Errors").text("Your change did not save! Error:" + event.message + ". Look:" + event.where);
+                        console.log("Your change did not save! Error:" + event.message + ". Look:" + event.where);
+                        $("#dialog-message").empty().text("Your change did not save! Error:" + event.message + ". Look:" + event.where);             
+                        $("#dialog-message").dialog({ 
+                            title: "Error"                                 
+                        });
+                        $("#dialog-message").dialog("open");
+                        // runQuery("Id", true);
                     } 
                     else {
-                        $("#spiner").hide();
-                        runQuery("Id", true);       
-                        $("#Errors").text("Your change did not save! Error:" + event.message);                                         
+                        // $("#spiner").hide();
+                        spinerHide();
+                        // runQuery("Id", true);       
+                        $("#Errors").text("Your change did not save! Error:" + event.message);    
+                        console.log("Your change did not save! Error:" + event.message);
+                        $("#dialog-message").empty().text("Your change did not save! Error:" + event.message);
+                        $("#dialog-message").dialog({ 
+                            title: "Error"                                 
+                        });
+                        $("#dialog-message").dialog("open");
+
                     }
                 },
                 {escape: false}
@@ -872,28 +1176,46 @@
 
           function cancelSelect() {
             $("#picklist").empty();
-            PopUpHide();
+            // PopUpHide();
+            $("#popupPicklist").hide();
           }
 
           function selectedPickList() {
-            var newValue = $("#picklistValues option:selected").text();
+            // var newValue = $("#picklistValues option:selected").text();
             var picklistValue;
-            if ($("#picklistValues").attr("multiple")) {
-              picklistValue = $("#picklistValues").val().join(';');
+            console.log("!!!!!!!!!!!!FROM selectedPickList()");
+            if ($("#picklistCurrentValue").is(":visible")) {
+                // $("#picklistCurrentValue option").each(function() {
+                //     // picklistValue.push($(this).val());
+                //     if ($(this).val() !== undefined) {
+                //         picklistValue += picklistValue + $(this).val() + ";";
+                //     }
+                // });
+                picklistValue = $("#picklistCurrentValue > option").map(function() {
+                   return this.value;
+                }).get(); 
+                console.log('picklistValue1=' + picklistValue);
+                picklistValue = String(picklistValue).replace(",", ";");
+                console.log('picklistValue2=' + picklistValue);
+
+              // picklistValue = $("#picklistCurrentValue").val().join(';');
             }
             else {
-              picklistValue = $("#picklistValues").val();
+                picklistValue = $("#picklistValues").val();
             }            
 
-            $(currentCell).text(picklistValue);           
+            $(currentCell).children(".newValue").text(picklistValue);           
             $("#picklist").empty();
-            PopUpHide();
+            // PopUpHide();
+            $("#popupPicklist").hide();
             if (picklistValue == oldValue) {
+              $(currentCell).children(".returnOldValue").hide();
               return;
             }
             $('#buttonEditBlock').show();
             $(currentCell).parents("tr").attr("type", "Edited");
             $(currentCell).children(".returnOldValue").show();
+            checkRecordForSave();
             // $(currentCell).addClass("cellEdited");
 
           }
@@ -1184,12 +1506,16 @@
                 isReurnOldValue = false;
                 return;
             }
-            initCell(cell);
+            // initCell(cell);
 
             // oldValue = currentCell.textContent.replace(/\r|\n/g, "").trim(); 
             currentCell = cell;
-            oldValue = $(cell).text().trim();
+            oldValue = $(cell).children(".oldValue").text().trim();
             console.log("oldValue=" + oldValue);
+            currentValue = $(cell).children(".newValue").text().trim().split(";");
+            console.log("currentValue=" + currentValue);
+
+            
             var picklist = ($(cell).attr("picklist").split(",")); 
             console.log("picklist=" + picklist);
             values = {names : picklist};
@@ -1201,12 +1527,49 @@
             //     }
             //   }
             // });
-            PopUpShow();
+
+            // PopUpShow();
+            $("#popupPicklist").show();
+            $("#picklistSelect").empty();
             selectView = $("#tmpPicklistSelect").html();
-            $("#picklist").append(_.template(selectView, values));
+            $("#picklistSelect").append(_.template(selectView, values));
             return;
 
         }
+
+        // function moveToFreeValue() {
+        //     console.log("from moveToFreeValue()");
+        //     var changeElement = $("#picklistCurrentValue").val();
+        //     console.log("changeElement=" + changeElement);
+        //     if (!!changeElement) {
+        //         _.each(changeElement, function(value) {
+        //           $("#picklistFreeValue").append(new Option(value, value));
+        //           // $("#picklistCurrentValue option[value=+ "'" +value]").remove();
+        //         });
+        //         $('#picklistCurrentValue :selected').remove(); 
+        //         // $("#picklistFreeValue").append(new Option("option text", "value"));
+        //     }
+        // }
+
+        function changeMultipicklistValues(fromSelect, toSelect) {
+            console.log("from changeMultipicklistValues()");
+            var changeElement = $(fromSelect).val();
+            console.log("changeElement=" + changeElement);
+            if (!!changeElement) {
+                _.each(changeElement, function(value) {
+                  $(toSelect).append(new Option(value, value));
+                  // $("#picklistCurrentValue option[value=+ "'" +value]").remove();
+                });
+                $(fromSelect).children(":selected").remove(); 
+                // $("#picklistFreeValue").append(new Option("option text", "value"));
+            }
+        }
+
+        // function moveToCurrentValue() {
+        //     console.log("from moveToCurrentValue()");
+        //     var changeElement = $("#picklistFreeValue").val();
+        //     console.log("changeElement=" + changeElement);
+        // }
 
         function returnOldValue(element) {
             console.log("from returnOldValue()");
@@ -1237,12 +1600,12 @@
             // console.log("element.tagName=" + element.tagName);
             // $(element > "td:[type='ID']" > ".saveRecord" ).show();
             $("#tableBody > tr").each(function(i, val) {
-                console.log("this=" + this);
-                console.log("this.tagName=" + this.tagName);
+                // console.log("this=" + this);
+                // console.log("this.tagName=" + this.tagName);
 
-                console.log("i.tagNAme=" + i.tagName);
+                // console.log("i.tagNAme=" + i.tagName);
 
-                console.log("$(this).children(td[type='ID'] = " + $(this).children("td[type='ID']").children(".saveRecord").text());
+                // console.log("$(this).children(td[type='ID'] = " + $(this).children("td[type='ID']").children(".saveRecord").text());
 
                 if ($(this).children("td").children(".returnOldValue").is(':visible')) {
                     $(this).children("td[type='ID']").children(".saveRecord").show();   
@@ -1378,19 +1741,52 @@
 
 <!--******************************************************** UNDERSCORE TEMPLATES ***********************************************************-->
     <script type="text/template" id="tmpPicklistSelect">
-      <div>
-      <% var multiPicklist = ''; %>
-      <%  if ($(currentCell).attr('type') == 'MULTIPICKLIST') { multiPicklist = "multiple"; } %>  
-      <select id="picklistValues" <%= multiPicklist %> >        
-        <% _.each(values.names, function(value, key) { %>
-          <option value="<%= value %>"><%= value %></option>
-         <% }); %> 
-      </select>
-      </div>
-      <div>
-        <button id="getSelect" onclick="selectedPickList();" >SELECT</button>
-        <button id="cancelSelect" onclick="cancelSelect();" >CANCEL</button>
-      </div>
+        <div class="picklistMenu">
+          <div class="picklistMenuSelect">
+              <% var multiPicklist = ''; %>
+              <!-- <%  if ($(currentCell).attr('type') == 'MULTIPICKLIST') { multiPicklist = "multiple"; } %>   -->
+              <%  if ($(currentCell).attr('type') == 'PICKLIST') { %>
+                  <select id="picklistValues" >        
+                    <% _.each(values.names, function(value, key) { %>
+                      <option value="<%= value %>"><%= value %></option>
+                     <% }); %> 
+                  </select>
+              <% } else { %>
+
+                  <div id="multipicklistMenu">
+                      <div>  
+                          <select  id="picklistFreeValue" size="4" multiple="multiple" >        
+                            <% _.each(values.names, function(value, key) { %>
+                                <% if (!(_.contains(currentValue, value))) { %>
+                                    <option value="<%= value %>"><%= value %></option>
+                                <% } %>
+                             <% }); %> 
+                          </select >  
+                      </div>
+                      <div>
+                          <div>
+                            <button id="toFreeValues" onclick="changeMultipicklistValues($('#picklistCurrentValue'), $('#picklistFreeValue'));" >&larr;</button>
+                          </div>
+                          <div>
+                            <button id="toCurrentValues" onclick="changeMultipicklistValues($('#picklistFreeValue'), $('#picklistCurrentValue'));">&rarr;</button>
+                          </div>
+                      </div>
+                      <div>
+                          <select  id="picklistCurrentValue" size="4" multiple="multiple" >        
+                            <% _.each(currentValue, function(value, key) { %>
+                              <option value="<%= value %>"><%= value %></option>
+                             <% }); %> 
+                          </select >
+                      </div>
+                  </div>  
+              <% } %>
+
+          </div>
+          <div class="picklistMenuButton">
+            <button id="getSelect" onclick="selectedPickList();" >SELECT</button>
+            <button id="cancelSelect" onclick="cancelSelect();" >CANCEL</button>
+          </div>
+        </div>
     </script>    
 
     <script type="text/template" id="tmpInput">
@@ -1432,7 +1828,11 @@
             <% _.each(heads, function(head, key, list) { %>
                 <%  sortClass = ""; direction = ''  %>
                 <%  if (head.isSort) { if(head.direction) { direction = '&#9650;'; sortClass = "asc";  } else {direction = '&#9660;';sortClass = "desc";} } %>
-                <th class="text-left" edit="<%= head.isEdit %>" direction="<%= sortClass  %>"><%= head.name %><span><%= direction %></span> </th>
+                <th class="text-left" edit="<%= head.isEdit %>" direction="<%= sortClass  %>">
+                    <!-- <span class="newValue"><%= head.name %></span> -->
+                    <%= head.name %>
+                    <span><%= direction %></span>
+                </th>
               
             <% }); %>
         </tr>
@@ -1475,8 +1875,7 @@
                     <% if (field.fieldType == 'ID') { %>  
                         <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" >  
                             <span class="newValue"> <%= field.fieldValue %> </span>                    
-                            <span class="saveRecord" onclick="saveRecord(this);" > 
-                                    SPARTA!!!!!!!
+                            <span class="saveRecord" onclick="saveRecord(this);" >                                     
                                     <img src="/img/permissions_confirm16.gif" />
                                     <!-- <apex:image value="/img/func_icons/remove12_on.gif" />  -->
                             </span>
@@ -1504,18 +1903,18 @@
                         <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
                             <a target="_blank" href="<%= getReference(field.fieldValue) %>"> <%= field.fieldValue %> </a>
                         </td> 
-                    <% } else if (field.fieldType == 'PICKLIST') { %>
+                    <% } else if (field.fieldType == 'PICKLIST' || field.fieldType == 'MULTIPICKLIST') { %>
                         <td onclick="picklistClicked(this);" class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" picklist="<%= field.picklistValues %>"> 
-                            <%= field.fieldValue %>
-                        <span class="returnOldValue" onclick="returnOldValue(this);" > 
-                                    <img src="/img/func_icons/remove12_on.gif" />
-                                    <!-- <apex:image value="/img/func_icons/remove12_on.gif" />  -->
-                        </span>
+                            <span class="newValue"> <%= field.fieldValue %> </span>
+                            <span class="oldValue"> <%= field.fieldValue %> </span> 
+                            <span class="returnOldValue" onclick="returnOldValue(this);" > 
+                                <img src="/img/func_icons/remove12_on.gif" />                                        
+                            </span>
                         </td>  
-                    <% } else if (field.fieldType == 'MULTIPICKLIST') { %>
+   <!--                  <% } else if (field.fieldType == 'MULTIPICKLIST') { %>
                         <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" picklist="<%= field.picklistValues %>"> 
                             <%= field.fieldValue %>
-                        </td>                      
+                        </td>  -->                     
                     <% } else { %>
                         <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" onclick="cellClicked(this);" >
                             <span class="newValue"> <%= field.fieldValue %> </span>

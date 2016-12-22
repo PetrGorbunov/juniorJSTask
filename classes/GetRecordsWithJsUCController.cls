@@ -1,4 +1,4 @@
-public with sharing class GetRecordsWithJsUCController {
+global with sharing class GetRecordsWithJsUCController {
 
     public String baseURL { get; set; }
 
@@ -8,7 +8,7 @@ public with sharing class GetRecordsWithJsUCController {
     private static final String TABLE_NAME_NONE = '--NONE--';
     
     @RemoteAction
-    public static List<String> getTableNames() {
+    global static List<String> getTableNames() {
         List<String> tableNames = new List<String>();
         tableNames.add(TABLE_NAME_NONE);
         for (Schema.SObjectType objectType : Schema.getGlobalDescribe().values()) {
@@ -19,7 +19,7 @@ public with sharing class GetRecordsWithJsUCController {
     }
 
     @RemoteAction
-    public static List<String> getFields(String tableName) {
+    global static List<String> getFields(String tableName) {
         List<String> fieldsAll = new List<String>();
         if (String.isNotBlank(tableName) && (tableName != TABLE_NAME_NONE)) {
             Map<String,Schema.SObjectField> fieldMap = Schema.getGlobalDescribe().get(tableName).getDescribe().fields.getMap();
@@ -39,7 +39,7 @@ public with sharing class GetRecordsWithJsUCController {
     }
 
     @RemoteAction
-    public static List<Object> runQuery(String tableName, List<String> fields, String sortField, Boolean isASC) {       
+    global static List<Object> runQuery(String tableName, List<String> fields, String sortField, Boolean isASC) {       
         String direction = (isASC) ? 'ASC' : 'DESC';
         String query = 'SELECT ';
         for (String field : fields) {
@@ -153,7 +153,7 @@ public with sharing class GetRecordsWithJsUCController {
     }
 
     @RemoteAction
-    public static void saveListObjects(String rec, String tableName) {
+    global static void saveListObjects(String rec, String tableName) {
         List<List<String>> recordsList = (List<List<String>>)System.JSON.deserialize(rec, List<List<String>>.class);
        
         Map<String,Schema.SObjectField> fieldMap = Schema.getGlobalDescribe().get(tableName).getDescribe().fields.getMap();
