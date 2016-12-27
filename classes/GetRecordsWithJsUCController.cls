@@ -1,4 +1,4 @@
-global with sharing class GetRecordsWithJsUCController {
+global class GetRecordsWithJsUCController {
 
     public String baseURL { get; set; }
 

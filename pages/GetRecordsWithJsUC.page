@@ -5,11 +5,6 @@
     <script src="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.min.js')}"/>
     <apex:stylesheet value="{!URLFOR($Resource.jqueryui, 'jquery-ui-1.12.1.custom/jquery-ui.css')}"/>
 
-    <!-- <apex:stylesheet value="{!URLFOR($Resource.styles, 'loader_grey.css')}" /> -->
-    <!-- <apex:stylesheet value="{!URLFOR($Resource.styles, 'picklistEditing.css')}" /> -->
-    <!-- <apex:stylesheet value="{!URLFOR($Resource.styles, 'table.css')}" /> -->
-    <!-- <apex:stylesheet value="{!URLFOR($Resource.styles, 'main.css')}" /> -->
-
     <style type="text/css">
       .cellEdited {
           color: red;
@@ -23,55 +18,23 @@
       }
 
 
-      /*STYLES FOR ANIMATION NEW PAGE*/
+    /*STYLES FOR ANIMATION NEW PAGE*/
     body {
-        /*width: 100%;*/
-        /*height:100%;*/
         background: #f0c60a;
-/*        overflow-x: hidden;
-        overflow-y: auto;*/
     }
 
-    .content{
-        /*right: 40px;*/
-        /*left: 280px;*/
+    .content {        
         top: 0px;
-        position: absolute;
-        /*position: all;*/
-        /*padding-bottom: 30px;*/
-        text-align: center; /**/
+        position: absolute;        
+        text-align: center; 
         width: 100%;
         height: 100%;
         margin: 0 auto; 
     }
 
-    .content h2{
-        /*font-size: 55px;*/
-        /*padding: 10px 0px 20px 0px;*/
-        /*margin-top: 52px;*/
-        /*color: #fff;*/
-        /*color: #000000;*/
 
-        /*color: rgba(255,255,255,0.9);*/
-        /*text-shadow: 0px 1px 1px rgba(0,0,0,0.3);*/
-    }
-
-    .content p{
-        /*font-size: 18px;*/
-        /*padding: 10px;*/
-        /*line-height: 24px;*/
-        /*color: #fff;*/
-        /*color: #000000;*/
-        /*display: inline-block;*/
-        /*background: black;*/
-        /*padding: 10px;*/
-        /*margin: 3px 0px;*/
-    }
-
-    .panel{
-        /*width: 100%;*/
+    .panel {
         width: 98%;
-        /*margin: 0 auto; */
         min-height: 100%;
         position: absolute;
         background-color: #000;
@@ -85,20 +48,14 @@
         transition: all .6s ease-in-out;
     }
 
-    .panel:target{
+    .panel:target {
         margin-left: 0%;
         background-color: #fcec0a;
-        /*background-color: #dfedf3;*/
     }
 
-
     /*STYLES FOR POPUP MENU*/
-
-    /* popup menu */
-    .b-popup{
-        /*width:99%;*/
+    .b-popup {
         width: 100% !important;
-        /*min-height:100%;*/
         height: 100%;
         background-color: rgba(0,0,0,0.5);
         overflow:hidden;
@@ -108,28 +65,20 @@
         z-index: 3;
     }
 
-    .b-popup .b-popup-content {
-        /*margin:40px auto 0px auto;*/
-        /*margin: auto;*/
+    .b-popup .b-popup-content {        
         width:20%;
         height: 40%;
         padding:10px;
-        /*background-color: #c5c5c5;*/
-        /*border-radius:5px;*/
-        /*box-shadow: 0px 0px 10px #000;*/
         text-align: center;
         position:absolute;
         left:50%;
         top:50%;
         margin-top: -10%;
         margin-left: -10%;
-        /*margin: -20% 0 0 -10%;*/
     }
 
-    /* popup menu for picklist and multipicklist */
     #popupPicklist {
         width:99%;
-        /*min-height:100%;*/
         height: 100%;
         background-color: rgba(0,0,0,0.5);
         overflow:hidden;
@@ -139,21 +88,15 @@
     }
 
     #picklistSelect {
-        /*margin:40px auto 0px auto;*/
-        /*margin: auto;*/
         width:40%;
         height: 60%;
         padding:10px;
-        /*background-color: #c5c5c5;*/
-        /*border-radius:5px;*/
-        /*box-shadow: 0px 0px 10px #000;*/
         text-align: center;
         position:absolute;
         left:40%;
         top:30%;
         margin-top: -10%;
         margin-left: -10%;
-        /*margin: -20% 0 0 -10%;*/
     }
 
     #picklistCurrentValue,
@@ -174,23 +117,17 @@
         margin: 3px;
     }
 
-
-
     .b-container {
         width:100%;
         height:100%;
-        
         margin:0px auto;
         padding:10px;
-        /*padding:10px;*/
-
         font-size:30px;
         color: #fff;
         display: block;
     }
 
     div.block {
-        /*background: #3914AF;*/
         background: #1c5d79;
         margin: 10px auto;
         padding: 10px;
@@ -211,13 +148,11 @@
     }
 
     .newMenuButton {
-        /*[ Position ]*/
         margin:0px;
         float:left;
         left: 10px;
         right: 50px;
         top:20px;
-        /* [ Botton ] */
         position:relative;
         height:50px;
         width:50px;
@@ -273,17 +208,16 @@
         background-image:linear-gradient(top,transparent,rgba(0,0,0,0.2));
     }
 
-    .newMenuButton:hover
-    {
-        /*color:white;*/
-        /*{Gradient}*/
+    .newMenuButton:hover {
         background-image:-moz-linear-gradient(top,transparent,rgba(0,0,0,0.17));
         background-image:-webkit-linear-gradient(top,transparent,rgba(0,0,0,0.17));
         background-image:-o-linear-gradient(top,transparent,rgba(0,0,0,0.17));
     }
+
     .newMenuButton:hover a {
         color:white;
     }
+
     .newMenuButton:active{
         margin-top:4px;
         color:#777;
@@ -297,6 +231,7 @@
     #divTableNames {
         margin-bottom: 0px;
         margin-top: 30px;
+        display: none;
     }
 
     .picklistMenu {
@@ -306,7 +241,6 @@
         text-align: center;
         background: #1c5d79;
         display: flex;
-        /*align-items: center;*/
         flex-direction: column;
         justify-content: center;
         align-items: stretch;
@@ -325,14 +259,6 @@
         font-size: 26px; 
     }
     
-
-
-
-/*    div.selectTableNames,
-    div.selectTableFields {
-        background: white;
-    }*/
-
     div.tables,
     div.names,
     div.fields,
@@ -370,8 +296,6 @@
     }
 
     .headerMenuTableDiv {
-        /*color: #3914AF;*/
-        /*color: white;
         margin-top: 50px;
         font-size: 36px;*/
         width: 60%;
@@ -381,7 +305,6 @@
         margin-top: 60px;
         margin-bottom: 10px; 
         padding: 10px;
-
     }
 
     .footerMenuTableDiv {
@@ -425,14 +348,12 @@
     }
 
     .button-edit:hover {
-        background-color: white; 
-
+        background-color: white;
     }
 
     #buttonEditBlock {
         width: 60%;
     }
-
 
     #divResultTable {
         width: 100%;
@@ -445,76 +366,11 @@
         margin: 0px auto;
    }
 
-/*    div.menuSelect,
-    div.menuTable {
-        width: 50%;
-        margin: 0 auto; 
-    }*/
-
-/*    
-    ul.dropdown li { 
-    position: relative; 
-    }
-
-    ul.dropdown,
-    ul.dropdown-inside {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    ul.dropdown-inside {
-        position: absolute;
-        left: -9999px;
-    }
-
-    ul.dropdown li.dropdown-top {
-        display: inline;
-        float: left;
-        margin: 0 1px 0 0;
-    }
-
-    ul.dropdown li.dropdown-top a {
-        padding: 3px 10px 4px;
-        display: block;
-    }
-
-    ul.dropdown a.dropdown-top { 
-        background: #efefef; 
-    }
-
-    ul.dropdown 
-    a.dropdown-top:hover { 
-        padding: 2px 10px 5px; 
-    }
-
-    ul.dropdown 
-    li.dropdown-top:hover 
-    .dropdown-inside {
-        display: block;
-        left: 0;
-    }
-
-    ul.dropdown 
-    .dropdown-inside { 
-        background: #fff; 
-    }
-
-    ul.dropdown 
-    .dropdown-inside 
-    a:hover { 
-        background: #efefef; 
-    }*/
-
-
     /*STYLES FOR SPINER*/
-
-
     .loader,
     .loader:before,
     .loader:after {
         background: white;
-        /*background: #3914AF;*/
-
         -webkit-animation: load1 1s infinite ease-in-out;
         animation: load1 1s infinite ease-in-out;
         width: 1em;
@@ -523,7 +379,6 @@
 
     .loader {
         color: white;
-        /*color: #3914AF;*/
         text-indent: -9999em;
         margin: 88px auto;
         position: relative;
@@ -579,10 +434,7 @@
     } 
 
     /*FOR TABLE*/
-
-   
-
-  table {
+    table {
         width:100%;
         margin:0;
         padding:0;
@@ -622,7 +474,6 @@
         line-height:32px;
         text-align:center;
         color:#1c5d79;
-        /*background-image:url(col_bg_new.gif);*/
         background-repeat:repeat-x;
         border-left:solid 1px #F90;
         border-right:solid 1px #F90;
@@ -665,40 +516,6 @@
         background:#fff
     }
 
-    /*table a {
-        color:#F60;
-        text-decoration:none;
-        font-size:13px;
-        border-bottom:solid 1px #fff
-    }*/
-
-    /*table a:hover {
-        color:#F90;
-        border-bottom:none
-    }*/
-
-    /*tfoot {
-        background:#f3f3f3;
-        height:24px;
-        line-height:24px;
-        font-family:"Trebuchet MS",Trebuchet,Arial,sans-serif;
-        font-size:14px;
-        font-weight:700;
-        color:#555d6d;
-        text-align:center;
-        letter-spacing:3px;
-        border-top:solid 2px #326e87;
-        border-bottom:dashed 1px #c2c2c2
-    }
-
-    tfoot tr th {
-        border-top:solid 1px #326e87
-    }
-
-    tfoot tr td {
-        text-align:right
-    }*/
-
     </style>
 <body>
     <div id = "dialog-message">
@@ -710,81 +527,6 @@
           
         </div>
     </div>
-
-<!--     <div id="dialog-message" title="Download complete">
-        
-    </div> -->
-
-    <div class="b-popup" id="popup2" >
-      <div id="timepicker" class="b-popup-content">
-        <div>Set time:</div>
-        <div id="hourPicker">
-          H:
-          <button id="minusHour" onmouseup="isPressed=false;changeTimeFast(-3600);" onmousedown="isPressed=true;changeTimeFast(-3600);">-</button>
-          <input type="text" value="0" id="inputHour" disabled="disabled" size="2" /> 
-          <button id="plusHour" onmouseup="isPressed=false;changeTimeFast(3600);" onmousedown="isPressed=true;changeTimeFast(3600);">+</button>
-        </div>
-        <div id="minutPicker">
-          M:
-          <button id="minusMinut" onmouseup="isPressed=false;changeTimeFast(-60);" onmousedown="isPressed=true;changeTimeFast(-60);">-</button>
-          <input type="text" value="0" id="inputMinut" disabled="disabled" size="2" />
-          <button id="plusMinut" onmouseup="isPressed=false;changeTimeFast(60);" onmousedown="isPressed=true;changeTimeFast(60);">+</button>
-        </div>
-        <div id="secPicker">
-          S:
-          <!-- onclick="changeTime(-1)" -->
-          <button id="minusSec"  onmouseup="isPressed=false;changeTimeFast(-1);" onmousedown="isPressed=true;changeTimeFast(-1);" >-</button>
-          <input type="text" value="0" id="inputSec" disabled="disabled" size="2" />
-          <button id="plusSec" onmouseup="isPressed=false;changeTimeFast(1);" onmousedown="isPressed=true;changeTimeFast(1);">+</button>
-        </div>
-        <div id="btnTimePicker">
-            <button id="btnTimePicker" onclick="setTime();">Set</button>
-        </div>
-      </div>
-    </div>
-
-<!--   <div class="b-container">
-    <div class="parent">
-
-      <div id="Errors" class="block"></div>      
-      
-      <div id="divTableNames" class="block" ></div>
-      <div id="divTableFields" class="block" ></div>
-      
-      <div id="spiner" class="loader" ></div>
-    </div>
-
-    <div id="divResultTable">
-        <table id="resultTableTag" class="table-fill">
-            <thead id="tableHead"></thead>
-            <tbody id="tableBody" class="table-hover"></tbody>            
-        </table>    
-
-        <div id="pagination" class="block">
-            <select id="rowsOnPage" onchange="changePagination(this)">
-                <option value="5" >5</option>
-                <option value="10" >10</option>
-                <option value="18" >18</option>
-                <option value="25" >25</option>
-                <option value="50" >50</option>
-            </select>
-
-            <button id="firstPage">&lt;&lt;</button>
-            <button id="prevPage">&lt;</button>
-            <input disabled="disabled" id="currentPage" type="text" value="1" size="3" />
-            <span id="pagesCount"></span>
-            <button id="nextPage">&gt;</button>
-            <button id="lastPage">&gt;&gt;</button>
-        </div>
-    </div>
-
-    <div id="buttonEditBlock" class="block">
-        <button onclick="editRows()" id="buttonEdit" >Change</button>
-    </div>
-  </div> -->
-
-
-     
 
     <div class="b-popup" id="popupSpiner" >
         <div id="picklist" class="b-popup-content">
@@ -800,36 +542,24 @@
 
     <div class="b-container"> 
         <div id="menuSelect" class="content">
-            <!-- <div class="headerMenuSelectDiv">Select menu</div> -->
-    <!--         <div>Select table:</div>
-            <div>Select fields:</div> -->
             <div class="allMenu">
                 <div>
                     <div id="divTableNames" class="block" ></div>
-                    <!-- <div> -->
                     <div id="divTableFields" ></div>
                 </div>
                 <div id="goToRightButton" class="newMenuButton">
                     <a id="linkToMenuTable" href="#menuTable" >&rarr;</a>
                 </div>
-            </div>
-            <!-- </div> -->
-            
-            <a id="linkToMenuTable" href="#menuTable" style="display: none">Contact</a>
-            
-            <!-- ... -->
-        </div>
-        <!-- /Home -->
+            </div>            
+            <a id="linkToMenuTable" href="#menuTable" style="display: none">Contact</a> 
+        </div>         
          
-         
-        <!-- Contact -->
         <div id="menuTable" class="panel">
             <div class="content">
                 <div class="allMenu">
                     <div id="goToLeftButton" class="newMenuButton">
                         <a id="linkToMenuSelect" href="#menuSelect" >&larr;</a>
                     </div>
-
                     <div>
                         <div class="headerMenuTableDiv" id="headerMenuTableDiv">Menu for table selectTableNames headerMenuTableDiv</div>
 
@@ -844,7 +574,6 @@
                                 <select id="rowsOnPage" onchange="changePagination(this)">
                                     <option value="5" >5</option>
                                     <option value="10" >10</option>
-                                    <!-- <option value="18" >18</option> -->
                                     <option value="25" >25</option>
                                     <option value="50" selected="selected" >50</option>
                                 </select>
@@ -865,17 +594,12 @@
                             <a id="linkToMenuSelect" href="#menuSelect"  >&larr; Go to Select menu</a>
                         </div>
                     </div>
-
-
-
                 </div>
-            <!-- .onclick="runQuery('Id', true);".. -->
             </div>
         </div>
     </div>
-
-
 </body>
+
     <script type="text/javascript">
         $("#dialog-message").dialog({ 
             show: 'slide',
@@ -892,19 +616,48 @@
 
         $("#Errors").text("");
         $("#spiner").show();
-        /**/ spinerShow();
+        spinerShow();
         $("#goToRightButton").hide();
         $("#divResultTable").hide();
         $("#buttonEditBlock").hide();
         PopUpHide();
         TimePickerHide();
         $("#popupPicklist").hide();
+        
+
+
+        // window.onload = function() {
+        //     getTableNames(); 
+        // }                 
+        // function zh() {
+        //     package-example.GetRecordsWithJsUCController.getTableNames(function(result, event) {
+        //     $("#spiner").hide();
+        //     spinerHide();
+        //     if (event.status) {
+        //         tables = [];
+        //         for (var iter = 0; iter < result.length; iter++) {  
+        //             tables.push({name: result[iter]}); 
+        //         }     
+        //         tableNamesView = $("#tmpTableNames").html();
+        //         $("#divTableNames").append(_.template(tableNamesView, {tables: tables}));               
+        //     } 
+        //     else if (event.type === 'exception') {
+        //         $("#Errors").text(event.message + ". Look:" + event.where);
+        //     } 
+        //     else {
+        //         $("#Errors").text(event.message);
+        //     }
+        // }); 
+        
+        // }      
+            
 
         Visualforce.remoting.Manager.invokeAction(
             "{!$RemoteAction.GetRecordsWithJsUCController.getTableNames}",            
             function(result, event) {
                 $("#spiner").hide();
-                /**/ spinerHide();
+                spinerHide();
+                $("#divTableNames").show();
                 if (event.status) {
                     tables = [];
                     for (var iter = 0; iter < result.length; iter++) {  
@@ -924,41 +677,40 @@
         );
 
 /***********************************************REMOTE ACTION FUNCTIONS***********************************************/
+        // function getTableNames() {
+        //     GetRecordsWithJsUCController.getTableNames(
+        //         function(result, event) {
+        //             $("#spiner").hide();
+        //             spinerHide();
+        //             $("#divTableNames").show();
+        //             if (event.status) {
+        //                 tables = [];
+        //                 for (var iter = 0; iter < result.length; iter++) {  
+        //                     tables.push({name: result[iter]}); 
+        //                 }     
+        //                 tableNamesView = $("#tmpTableNames").html();
+        //                 $("#divTableNames").append(_.template(tableNamesView, {tables: tables}));               
+        //             } 
+        //             else if (event.type === 'exception') {
+        //                 $("#Errors").text(event.message + ". Look:" + event.where);
+        //             } 
+        //             else {
+        //                 $("#Errors").text(event.message);
+        //             }
+        //         });
+        // }
+
         function getFields(tableName) { 
             $("#Errors").text("");
             $("#divTableFields").empty();
-            // $("#divTableFields").css({"height":"0%","overflow":"hidden", "-webkit-transition":"all 1s linear"});
             $("#divTableFields").css({"height":"0%"});
 
 
             $("#spiner").show();
-            /**/ spinerShow();
+            spinerShow();
 
             $("#divResultTable").hide();
             $("#buttonEditBlock").hide();  
-
-            // GetRecordsWithJsUCController.getFields(tableName.value, function(result, event) {
-            //     if (event.status) {      
-            //         $("#spiner").hide(); 
-            //         /**/ spinerHide();                      
-            //         fields = [];
-            //         for (var iter = 0; iter < result.length; iter++) {  
-            //             fields.push({name: result[iter]}); 
-            //         }
-            //         if (fields.length > 0) {                        
-            //             tableFieldsView = $("#tmpFieldNames").html();
-            //             $("#divTableFields").append(_.template(tableFieldsView, {fields: fields}));
-            //         }
-            //         $("#divTableFields").css({"height":"100%"});
-            //     } 
-            //     else if (event.type === "exception") {
-            //         $("#Errors").text(event.message + ". Look:" + event.where);
-            //     } 
-            //     else {
-            //         $("#Errors").text(event.message);
-            //     }},
-            //     {escape: false}
-            // );
 
             Visualforce.remoting.Manager.invokeAction(
                 "{!$RemoteAction.GetRecordsWithJsUCController.getFields}",
@@ -991,15 +743,12 @@
         function runQuery(field, direction) {
             $("#Errors").text("");
             $("#spiner").show();
-            /**/ spinerShow();
+            spinerShow();
             $("#divResultTable").hide();
             $("#tableHead").empty();
             $("#tableBody").empty();
             $("#buttonEditBlock").hide();
-
-            /**/
-            console.log("from runQuery()");
-            /**/
+            $("#goToLeftButton").hide();
 
             tableName = $("#selectTableNames").val();
             fieldsName = $("#selectFieldNames").val(); 
@@ -1014,18 +763,17 @@
                 field,
                 direction,
                 function(result, event) {
-                    //add handler
-                    //сделать все ремоут глобальными
                     if (event.status) {   
                         $("#spiner").hide();
-                        /**/ spinerHide();
+                        spinerHide();
                         $("#currentPage").val(1);  
                         $("#divResultTable").show();
                         $("#goToRightButton").show();
+                        $("#goToLeftButton").show();
+
                         
                         $("#headerMenuTableDiv").empty().text("Menu for table " + "'" + tableName + "'");
-                        // selectTableNames headerMenuTableDiv
-
+                        
                         if (result.length == 0) {
                             $('#divResultTable').hide();
                             return;
@@ -1061,21 +809,7 @@
                             });
                         }
                         paginationControl(records);
-                        console.log("before link had clicled ");
-                        console.log("link= " + $("#linkToMenuTable").text());
-
-                        // $("#linkToMenuTable").trigger('click');
-
                         window.location.href = $('#linkToMenuTable').attr('href');
-
-
-                        // $('#linkToMenuTable').on('click', function(e) {
-                        //   console.log("on click linkT2oMenuTable!");  
-                        //   // $('#linkToMenuTable')[0].click();
-                        //   // e.preventDefault();
-                        // });
-                        console.log("after link had clicled ");
-
                     }
                     else if (event.type === 'exception') {
                         $("#Errors").text(event.message + ". Look:" + event.where);
@@ -1090,7 +824,6 @@
 
         function editRows() {
             $("#Errors").text("");
-            // $("#spiner").show();
             spinerShow();
             $("#buttonEditBlock").hide();
             $(".cellEdited").removeClass("cellEdited");
@@ -1104,10 +837,7 @@
                         if( $(this).attr("edit") == "true" || $(this).index() == 0) {
                             console.log("this.tagName=" + this.tagName);
                             if (this.tagName == 'TH' ) {
-                                // console.log("elementCurrentRow911=" + elementCurrentRow);
                                 cellValue = $(this).clone().children().remove().end().text().replace(/\r|\n/g, "").trim(); 
-                                console.log("cellValue911=" + cellValue);
-
                             } 
                             else {                           
                                 cellValue = $(this).children("span.newValue").text().replace(/\r|\n/g, "").trim();
@@ -1129,43 +859,33 @@
                 tableName,
                 function(result, event) {
                     if (event.status) {
-                        // $("#spiner").hide();
                         spinerHide();
                         $("#Errors").text("Your change saved!!!");
                         console.log("Your change saved!!!");
                         $("#dialog-message").empty().text("Your change was saved. Table will reload.");
-                        // $("#dialog-message").text("Your change was saved. Table will reload.");
                         $("#dialog-message").dialog({ 
                             title: "Message"                                 
                         });   
-                        $("#dialog-message").dialog("open"); 
-                        // runQuery("Id", true);                    
+                        $("#dialog-message").dialog("open");               
                     }       
                     else if (event.type === 'exception') {
-                        // $("#spiner").hide();
                         spinerHide();
                         
                         $("#Errors").text("Your change did not save! Error:" + event.message + ". Look:" + event.where);
-                        console.log("Your change did not save! Error:" + event.message + ". Look:" + event.where);
                         $("#dialog-message").empty().text("Your change did not save! Error:" + event.message + ". Look:" + event.where);             
                         $("#dialog-message").dialog({ 
                             title: "Error"                                 
                         });
                         $("#dialog-message").dialog("open");
-                        // runQuery("Id", true);
                     } 
                     else {
-                        // $("#spiner").hide();
-                        spinerHide();
-                        // runQuery("Id", true);       
+                        spinerHide();  
                         $("#Errors").text("Your change did not save! Error:" + event.message);    
-                        console.log("Your change did not save! Error:" + event.message);
                         $("#dialog-message").empty().text("Your change did not save! Error:" + event.message);
                         $("#dialog-message").dialog({ 
                             title: "Error"                                 
                         });
                         $("#dialog-message").dialog("open");
-
                     }
                 },
                 {escape: false}
@@ -1176,29 +896,20 @@
 
           function cancelSelect() {
             $("#picklist").empty();
-            // PopUpHide();
             $("#popupPicklist").hide();
           }
 
           function selectedPickList() {
-            // var newValue = $("#picklistValues option:selected").text();
-            var picklistValue;
             console.log("!!!!!!!!!!!!FROM selectedPickList()");
+            var picklistValue;
             if ($("#picklistCurrentValue").is(":visible")) {
-                // $("#picklistCurrentValue option").each(function() {
-                //     // picklistValue.push($(this).val());
-                //     if ($(this).val() !== undefined) {
-                //         picklistValue += picklistValue + $(this).val() + ";";
-                //     }
-                // });
                 picklistValue = $("#picklistCurrentValue > option").map(function() {
                    return this.value;
                 }).get(); 
                 console.log('picklistValue1=' + picklistValue);
-                picklistValue = String(picklistValue).replace(",", ";");
+                // picklistValue = String(picklistValue).replace(",", ";");
+                picklistValue = String(picklistValue).split(",").join(";");
                 console.log('picklistValue2=' + picklistValue);
-
-              // picklistValue = $("#picklistCurrentValue").val().join(';');
             }
             else {
                 picklistValue = $("#picklistValues").val();
@@ -1206,7 +917,6 @@
 
             $(currentCell).children(".newValue").text(picklistValue);           
             $("#picklist").empty();
-            // PopUpHide();
             $("#popupPicklist").hide();
             if (picklistValue == oldValue) {
               $(currentCell).children(".returnOldValue").hide();
@@ -1216,8 +926,6 @@
             $(currentCell).parents("tr").attr("type", "Edited");
             $(currentCell).children(".returnOldValue").show();
             checkRecordForSave();
-            // $(currentCell).addClass("cellEdited");
-
           }
 
           function PopUpShow(){
@@ -1315,7 +1023,13 @@
           }
 
         function getDataView(dateFromBase, isDateOnly) {
+            console.log("from getDataView()");
+            console.log("dateFromBase=" + dateFromBase);
+            if (dateFromBase === undefined) {
+                return "";
+            }
             var myDate = new Date(dateFromBase);
+            console.log("myDate2=" + myDate);
             var day = myDate.getDate();
             day = (day < 10) ? "0" + day : day; 
 
@@ -1434,6 +1148,12 @@
                 isReurnOldValue = false;
                 return;
             }
+
+            console.log("edit=" + $(cell).attr("edit"));
+            if ($(cell).attr("edit") == "false") {
+                return;
+            }
+
             initCell(cell);
 
             $(cell).children(".inputEdit").blur(function() { 
@@ -1452,9 +1172,10 @@
                 }
                 else {
                     $(cell).children(".returnOldValue").show();
+                    $("#buttonEditBlock").show();
                 }
 
-                /*$(cell).parent("tr")*/ checkRecordForSave();
+                checkRecordForSave();
             });
         }
 
@@ -1465,16 +1186,16 @@
                 return;
             }
             console.log("from date clicked");
+            oldValue = $(cell).children(".oldValue").text().trim();
+            console.log("oldValue=" + oldValue);
             initCell(cell);
+
 
             $(cell).children(".inputEdit").datepicker({
                 dateFormat: "yy-mm-dd",
                 onSelect: function(dateText, inst) {
-
                     var newValue = dateText;
                     var oldValue = $(this).siblings(".oldValue").text().trim();
-
-                    console.log("newValue=" + newValue + ";oldValue=" + oldValue);
 
                     $(cell).children(".newValue").text(dateText);
                     $(cell).children(".inputEdit").hide();         
@@ -1492,8 +1213,7 @@
                 onClose: function(selectedDate) {
                     $(cell).children(".inputEdit").hide();
                     $(cell).children(".newValue").show();
-                    // returnOldValue($(cell).children(".returnOldValue"));
-                    // $(this).parent().empty().html(oldValue);
+                    $("#buttonEditBlock").show();
                 }
             }).focus();
         }
@@ -1506,9 +1226,6 @@
                 isReurnOldValue = false;
                 return;
             }
-            // initCell(cell);
-
-            // oldValue = currentCell.textContent.replace(/\r|\n/g, "").trim(); 
             currentCell = cell;
             oldValue = $(cell).children(".oldValue").text().trim();
             console.log("oldValue=" + oldValue);
@@ -1519,37 +1236,14 @@
             var picklist = ($(cell).attr("picklist").split(",")); 
             console.log("picklist=" + picklist);
             values = {names : picklist};
-            // $( "#dialog-message" ).dialog({
-            //   modal: true,
-            //   buttons: {
-            //     Ok: function() {
-            //       $( this ).dialog( "close" );
-            //     }
-            //   }
-            // });
 
-            // PopUpShow();
             $("#popupPicklist").show();
             $("#picklistSelect").empty();
             selectView = $("#tmpPicklistSelect").html();
             $("#picklistSelect").append(_.template(selectView, values));
             return;
-
         }
 
-        // function moveToFreeValue() {
-        //     console.log("from moveToFreeValue()");
-        //     var changeElement = $("#picklistCurrentValue").val();
-        //     console.log("changeElement=" + changeElement);
-        //     if (!!changeElement) {
-        //         _.each(changeElement, function(value) {
-        //           $("#picklistFreeValue").append(new Option(value, value));
-        //           // $("#picklistCurrentValue option[value=+ "'" +value]").remove();
-        //         });
-        //         $('#picklistCurrentValue :selected').remove(); 
-        //         // $("#picklistFreeValue").append(new Option("option text", "value"));
-        //     }
-        // }
 
         function changeMultipicklistValues(fromSelect, toSelect) {
             console.log("from changeMultipicklistValues()");
@@ -1565,16 +1259,10 @@
             }
         }
 
-        // function moveToCurrentValue() {
-        //     console.log("from moveToCurrentValue()");
-        //     var changeElement = $("#picklistFreeValue").val();
-        //     console.log("changeElement=" + changeElement);
-        // }
 
         function returnOldValue(element) {
             console.log("from returnOldValue()");
             isReurnOldValue = true;
-            // var newValue = $(cell).children(".inputEdit").val().trim();
             var oldValue = $(element).siblings(".oldValue").text().trim();
             $(element).siblings(".newValue").text(oldValue);
             $(element).hide();
@@ -1597,16 +1285,7 @@
 
         function checkRecordForSave() {
             console.log("from checkRecordForSave()");
-            // console.log("element.tagName=" + element.tagName);
-            // $(element > "td:[type='ID']" > ".saveRecord" ).show();
             $("#tableBody > tr").each(function(i, val) {
-                // console.log("this=" + this);
-                // console.log("this.tagName=" + this.tagName);
-
-                // console.log("i.tagNAme=" + i.tagName);
-
-                // console.log("$(this).children(td[type='ID'] = " + $(this).children("td[type='ID']").children(".saveRecord").text());
-
                 if ($(this).children("td").children(".returnOldValue").is(':visible')) {
                     $(this).children("td[type='ID']").children(".saveRecord").show();   
                 }
@@ -1621,7 +1300,6 @@
             var currentPage =  parseInt($("#currentPage").val());
             $("#currentPage").val(currentPage + 1);
             paginationControl(records);
-
         });
 
         $("#prevPage").click( function(action) {
@@ -1657,65 +1335,7 @@
 
             $(activeField).find( "span").remove();
             runQuery(activeField.textContent.trim(), direction);
-        });
-
-        // $("#tableBody").click( function(action) {
-        //     $("#Errors").text("");
-        //     currentCell = action.target || action.srcElement;
-        //     if ($(currentCell).attr("edit") == "false") {
-        //         return;
-        //     }
-        //     else if(currentCell.tagName == "INPUT" || currentCell.tagName == "A") {
-        //         return;
-        //     }
-        //     else if($(currentCell).attr("type") == "REFERENCE") {
-        //         return;
-        //     }
-        //     else if ($(currentCell).attr("type") == "PICKLIST" || $(currentCell).attr("type") == "MULTIPICKLIST") {    
-        //         oldValue = currentCell.textContent.replace(/\r|\n/g, "").trim(); 
-        //         var picklist = ($(currentCell).attr("picklist").split(",")); 
-        //         values = {names : picklist};
-        //         PopUpShow();
-        //         selectView = $("#tmpPicklistSelect").html();
-        //         $("#picklist").append(_.template(selectView, values));
-        //         return;
-        //     }
-        //     else if (typeof $(currentCell).attr("type") == "undefined") {
-        //         return;
-        //     }
-
-        //     oldValue = currentCell.textContent.replace(/\r|\n/g, '').trim();
-
-        //     $(currentCell).empty();
-        //     object = {
-        //         value: oldValue,
-        //         dataType: $(currentCell).attr("type"),
-        //         edit: $(currentCell).attr("edit")
-        //     };           
-
-        //     inputView = $("#tmpInput").html();
-        //     $(currentCell).append(_.template(inputView, {object: object}));
-
-        //     var inputElement = $("#edit");
-        //     if ($(currentCell).attr("type") == "DATE" || $(currentCell).attr("type") == "DATETIME" ) {
-        //         openDatepicker(inputElement);
-        //     }  
-        //     else {
-        //         $(inputElement).focus();
-        //         $(inputElement).blur(function() {                
-        //             var val = $(this).val();
-        //             if (val == oldValue) {
-        //               $(this).parent().empty().html(val);
-        //               return;                      
-        //             }
-        //             $(this).parents("tr").attr("type", "Edited");
-        //             $(this).parents("td").addClass("cellEdited");
-
-        //             $(this).parent().empty().html(val);
-        //             $("#buttonEditBlock").show();
-        //         });
-        //     }
-        // });        
+        });    
 
         $(window).keydown(function(event) {      
             //pressed enter      
@@ -1744,7 +1364,6 @@
         <div class="picklistMenu">
           <div class="picklistMenuSelect">
               <% var multiPicklist = ''; %>
-              <!-- <%  if ($(currentCell).attr('type') == 'MULTIPICKLIST') { multiPicklist = "multiple"; } %>   -->
               <%  if ($(currentCell).attr('type') == 'PICKLIST') { %>
                   <select id="picklistValues" >        
                     <% _.each(values.names, function(value, key) { %>
@@ -1787,13 +1406,6 @@
             <button id="cancelSelect" onclick="cancelSelect();" >CANCEL</button>
           </div>
         </div>
-    </script>    
-
-    <script type="text/template" id="tmpInput">
-        <%  disabled = "disabled"; %>
-        <%  if (object.edit == 'true') { disabled = '' } %>        
-        <!-- onclick for date -->
-        <input id="edit" type="text" value="<%= object.value %>" <%= disabled %>  />
     </script>
 
     <script type="text/template" id="tmpTableNames">
@@ -1829,7 +1441,6 @@
                 <%  sortClass = ""; direction = ''  %>
                 <%  if (head.isSort) { if(head.direction) { direction = '&#9650;'; sortClass = "asc";  } else {direction = '&#9660;';sortClass = "desc";} } %>
                 <th class="text-left" edit="<%= head.isEdit %>" direction="<%= sortClass  %>">
-                    <!-- <span class="newValue"><%= head.name %></span> -->
                     <%= head.name %>
                     <span><%= direction %></span>
                 </th>
@@ -1837,36 +1448,6 @@
             <% }); %>
         </tr>
     </script>
-
-<!--     <script type="text/tmplate" id="tmpResultTableBody">
-        <% _.each(recordsView, function(record, key, list) { %>
-            <tr> 
-                <% _.each(record.object.fieldsList, function(field, key, list) { %>
-                    <% if (field.fieldType == 'DATE' && !!field.fieldValue) { %>
-                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
-                            <%= getDataView(field.fieldValue, true) %>
-                        </td> 
-                    <% } else if (field.fieldType == 'DATETIME' && !!field.fieldValue) { %>
-                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
-                            <%= getDataView(field.fieldValue, false) %>
-                        </td> 
-                    <% } else if (field.fieldType == 'REFERENCE' && !!field.fieldValue) { %>
-                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
-                            <a target="_blank" href="<%= getReference(field.fieldValue) %>"> <%= field.fieldValue %> </a>
-                        </td> 
-                    <% } else if (field.fieldType == 'PICKLIST' || field.fieldType == 'MULTIPICKLIST') { %>
-                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" picklist="<%= field.picklistValues %>"> 
-                            <%= field.fieldValue %>
-                        </td> 
-                    <% } else { %>
-                        <td class="text-left" type="<%= field.fieldType %>" edit="<%= field.isEdit %>" > 
-                            <%= field.fieldValue %>
-                        </td> 
-                    <% } %>
-                <% }); %>
-            </tr>
-        <% }); %>
-    </script> -->
 
     <script type="text/tmplate" id="tmpResultTableBody">
         <% _.each(recordsView, function(record, key, list) { %>
@@ -1877,7 +1458,6 @@
                             <span class="newValue"> <%= field.fieldValue %> </span>                    
                             <span class="saveRecord" onclick="saveRecord(this);" >                                     
                                     <img src="/img/permissions_confirm16.gif" />
-                                    <!-- <apex:image value="/img/func_icons/remove12_on.gif" />  -->
                             </span>
                             
                         </td>
@@ -1890,7 +1470,6 @@
                                 <input class="inputEdit" type="text" value="<%= getDataView(field.fieldValue, true) %>" />
                                 <span class="returnOldValue" onclick="returnOldValue(this);" > 
                                     <img src="/img/func_icons/remove12_on.gif" />
-                                    <!-- <apex:image value="/img/func_icons/remove12_on.gif" />  -->
                                 </span>
                             <% } %>
                         </td> 
@@ -1925,7 +1504,6 @@
                                 <input class="inputEdit" type="text" value="<%= field.fieldValue %>" />
                                 <span class="returnOldValue" onclick="returnOldValue(this);" > 
                                     <img src="/img/func_icons/remove12_on.gif" />
-                                    <!-- <apex:image value="/img/func_icons/remove12_on.gif" />  -->
                                 </span>
                             <% } %>
 
@@ -1934,8 +1512,6 @@
                 <% }); %>
             </tr>
         <% }); %>
-<!--         <% $(".oldValue").hide(); %>
-        <% $(".inputEdit").hide(); %> -->
 
     </script>
 
